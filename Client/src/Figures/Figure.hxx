@@ -1,27 +1,46 @@
 #ifndef _FIGURE_H_
 #define _FIGURE_H_
 
-#include <vector>
-
-#include "Element.hxx"
 #include "../setup.hxx"
+#include "Element.hxx"
 
 class Figure
 {
-protected:
-    Element _elementsArray[4];
-    glm::vec2 _position;
-    U32 _currentRotationIndex;
-    U32 _amountOfRotationIndex;
-public:
-    Figure();
-    ~Figure();
+    sf::Vector2f position;
+    sf::Vector2i matrixPosition;
 
-    void move(const glm::vec2&);
-    virtual void rotate_right() = 0;
-    virtual void rotare_left() = 0;
-    std::vector<Element*> get_elements_array(std::vector<Element*>&);
-    void render();
+protected:
+    Element elements[4];
+    U8 currentRotationIndex;
+    U8 countOfRotationIndexes;
+    sf::Vector2i* rotationPositions;
+
+public:
+
+    Figure(float, float);
+    Figure(const sf::Vector2f&);
+    Figure(const Figure&);
+    Figure operator= (const Figure&);
+
+    void set_position(const sf::Vector2f&);
+    sf::Vector2f get_position() const;
+    void move(const sf::Vector2f&);
+    void set_matrix_position(const sf::Vector2i&);
+    sf::Vector2i get_matrix_position() const;
+    void matrix_move(const sf::Vector2i&);
+
+    // rotate figure.
+    void rotate_right();
+    //virtual void rotate_left();
+
+    // set rotate index.
+    void set_rotation_index(U8);
+
+    // get elements array.
+    Element* get_elements();
+
+    void render() const;
+
 };
 
 #endif

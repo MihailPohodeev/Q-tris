@@ -1,57 +1,37 @@
 #include <iostream>
-#define GLEW_STATIC
-#include <GL/glew.h>
-// GLFW
-#include <GLFW/glfw3.h>
-// GLM
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include "setup.hxx"
+#include "Window.hxx"
 
-//#include "Shader.h"
-//#include "OBJ_parser.h"
-#include "Figures/Element.hxx"
+U32 SCR_WIDTH  = 800;
+U32 SCR_HEIGHT = 600;
+
+sf::RenderWindow* window;
 
 int main(int argc, char** argv)
 {
-    const unsigned int SCR_WIDTH = 800;
-    const unsigned int SCR_HEIGHT = 600;
+    window = new sf::RenderWindow(sf::VideoMode(SCR_WIDTH, SCR_HEIGHT), "Q-tris!");
 
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    //Element elem(sf::Vector2f(50, 50));
+    //elem.matrix_move(sf::Vector2i(1, 1));
+    //elem.set_color(sf::Color(79, 230, 178, 255));
 
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
-    if (window == NULL)
-    {  
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
+    Window win(500, 500);
+    win.set_center(sf::Vector2f(SCR_WIDTH / 2, SCR_HEIGHT / 2));
 
-    glfwMakeContextCurrent(window);
-    GLenum glewERR = glewInit();
-    if (glewERR != GLEW_OK)
+    while (window->isOpen())
     {
-        std::cerr << "GLEW ERROR!!!\n";
-        exit(1);
-    }
-    glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
-    
+        sf::Event event;
+        while (window->pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                window->close();
+        }
 
-    Element element(glm::vec3(0.5f, 0.5f, 0.5f));
-
-    while(!glfwWindowShouldClose(window))
-    {
-        glClearColor( 0.05f, 0.05f, 0.05f, 1.0f );
-        glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        element.render();
-
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+        win.update();
+        window->clear();
+        win.render();
+        window->display();
     }
 
-    glfwTerminate();
     return 0;
 }
