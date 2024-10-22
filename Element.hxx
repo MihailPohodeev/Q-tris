@@ -8,6 +8,13 @@ struct ElementData
 {
 	sf::Color color;
 	sf::Vector2i position;
+
+	struct ElementData* clone() const
+	{
+		struct ElementData* result = new struct ElementData;
+		*(result) = *(this);
+		return result;
+	}
 };
 
 
