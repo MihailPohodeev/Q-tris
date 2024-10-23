@@ -7,6 +7,8 @@
 #include "Figures/J_Figure.hxx"
 #include "Figures/L_Figure.hxx"
 #include "ScoreTable.hxx"
+#include "KeyboardController1.hxx"
+#include "JoystickController.hxx"
 
 extern sf::RenderWindow* window;
 sf::Font* mainFont;
@@ -27,6 +29,9 @@ int main(int argc, char** argv)
 
 	ScoreTable sc(sf::Vector2f(200, 400));
 	sc.set_position(sf::Vector2f(300, 100));
+	
+	KeyboardController1 controller;
+	JoystickController joystick(0);
 
 	while (window->isOpen())
 	{
@@ -36,6 +41,19 @@ int main(int argc, char** argv)
 			if (event.type == sf::Event::Closed)
 				window->close();
 		}
+
+		if (joystick.is_drop())
+			std::cout << "drop\n";
+		if (joystick.is_accelerate())
+			std::cout << "accelerate\n";
+		if (joystick.is_rotate_right())
+			std::cout << "rotate-right\n";
+		if (joystick.is_rotate_left())
+			std::cout << "rotate-left\n";
+		if (joystick.is_move_right())
+			std::cout << "right\n";
+		if (joystick.is_move_left())
+			std::cout << "left\n";
 
 		window->clear();
 		sc.render();
