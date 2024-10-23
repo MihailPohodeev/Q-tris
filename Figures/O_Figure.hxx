@@ -5,17 +5,15 @@
 
 class O_Figure : public Figure
 {
+	// construct rotate positions.
+	void construct_rotate_positions() override;
 public:
 	// constructor.
 	O_Figure();
 	// copy-constructor.
 	O_Figure(const O_Figure&);
 	// operator=
-	O_Figure& operator= (O_Figure);
-	// rotate right.
-	void rotate_right();
-	// rotate left.
-	void rotate_left();
+	O_Figure& operator= (const O_Figure&);
 	// copy current figure.
 	O_Figure* clone() const override;
 };

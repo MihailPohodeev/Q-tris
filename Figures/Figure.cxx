@@ -1,5 +1,17 @@
 #include "Figure.hxx"
 
+// create rotate positions array.
+void Figure::create_rotate_positions(U8 maxIndex)
+{
+	_maxRotateIndex = maxIndex;
+	_rotatePositions = new sf::Vector2i*[maxIndex];
+	for (U8 i = 0; i < _maxRotateIndex; i++)
+		_rotatePositions[i] = new sf::Vector2i[4];
+}
+
+//--------------------------------
+//-----PUBLIC-METHODS-------------
+//--------------------------------
 // construct.
 Figure::Figure() : _currentRotateIndex(0) {}
 

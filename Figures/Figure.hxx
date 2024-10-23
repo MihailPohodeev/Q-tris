@@ -2,7 +2,7 @@
 #define _FIGURE_H_
 
 #include <SFML/Graphics.hpp>
-#include "setup.hxx"
+#include "../setup.hxx"
 #include "Element.hxx"
 
 class Figure
@@ -18,6 +18,10 @@ protected:
 	U8 _maxRotateIndex;
 	// current index of rotate position.
 	U8 _currentRotateIndex;
+	// create _rotatePositions array.
+	void create_rotate_positions(U8);
+	// construct rotate positions.
+	virtual void construct_rotate_positions() = 0;
 public:
 	// constructor.
 	Figure();

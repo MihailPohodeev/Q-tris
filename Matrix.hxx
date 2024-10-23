@@ -23,8 +23,8 @@
 
 #include <mutex>
 #include "setup.hxx"
-#include "Element.hxx"
-#include "Figure.hxx"
+#include "Figures/Element.hxx"
+#include "Figures/Figure.hxx"
 
 class Matrix
 {

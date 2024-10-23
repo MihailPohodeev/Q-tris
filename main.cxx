@@ -1,8 +1,11 @@
 #include <iostream>
-#include "Element.hxx"
+#include "Figures/Element.hxx"
 #include "Matrix.hxx"
 #include "GameField.hxx"
-#include "O_Figure.hxx"
+#include "Figures/O_Figure.hxx"
+#include "Figures/I_Figure.hxx"
+#include "Figures/J_Figure.hxx"
+#include "Figures/L_Figure.hxx"
 
 extern sf::RenderWindow* window;
 
@@ -16,11 +19,13 @@ int main(int argc, char** argv)
 	
 	Matrix mat;
 	//mat.add_element({sf::Color(128, 200, 255, 255), sf::Vector2i(5, 5)});
-
-	O_Figure O;
-	O.set_color(sf::Color(230, 180, 100, 255));
-	O.set_position(sf::Vector2i(5, 5));
-	mat.add_figure(O);
+	
+	L_Figure J;
+	J.set_position(sf::Vector2i(5, 5));
+	J.set_color(sf::Color(200, 255, 180, 255));
+	J.rotate_right();
+	J.rotate_left();
+	mat.add_figure(J);
 
 	GameField gField(sf::Vector2f(200, 400));
 	gField.set_matrix(mat);
