@@ -22,7 +22,9 @@
  */
 
 #include <mutex>
+#include "setup.hxx"
 #include "Element.hxx"
+#include "Figure.hxx"
 
 class Matrix
 {
@@ -30,8 +32,16 @@ class Matrix
 public:
 	// constructor.
 	Matrix();
+	// copy-constructor.
+	Matrix(const Matrix&);
+	// add figure in Matrix.
+	void add_figure(const Figure&);
 	// add new element in Matrix.
 	void add_element(const struct ElementData&);
+	// ! return buffers addr ! DANGEROUS
+	struct ElementData*** get_buffer() const;
+	// operator=
+	Matrix& operator= (Matrix);
 	// copy current Matrix.
 	Matrix* clone() const;
 	// destructor.

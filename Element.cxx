@@ -24,6 +24,16 @@ void Element::move(const sf::Vector2f& offset)
 	_shape.move(offset);
 }
 
+sf::Vector2f Element::get_size() const
+{
+	return _shape.getSize();
+}
+
+void Element::set_size(const sf::Vector2f& size)
+{
+	_shape.setSize(size);
+}
+
 Element* Element::clone() const
 {
 	Element* result = new Element(_shape.getSize());
