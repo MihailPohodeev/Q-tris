@@ -8,6 +8,9 @@ RealPlayer::RealPlayer() : PlayerObject()
 	_currentFigure = nullptr;
 	_update_the_figure();
 
+	isMoveRight = isMoveLeft = false;
+	isRotateRight = isRotateLeft = false;
+	isDrop = isAccelerate = false;
 }
 
 void RealPlayer::_update_the_figure()
@@ -37,12 +40,13 @@ void RealPlayer::_get_new_figures_to_queue()
 
 void RealPlayer::update()
 {
+	struct ElementData*** buffer = _matrixForWork.get_buffer();
+
+	struct ElementData figureElements[4];
+	_currentFigure->get_all_elements(figureElements);
+
 	if (_clock.getElapsedTime().asMicroseconds() > (1'000'000 / _level))
 	{
-		struct ElementData*** buffer = _matrixForWork.get_buffer();
-		
-		struct ElementData figureElements[4];
-		_currentFigure->get_all_elements(figureElements);
 		for (U8 i = 0; i < 4; i++)
 		{
 			struct ElementData* currentElem = &figureElements[i];
@@ -55,19 +59,73 @@ void RealPlayer::update()
 				}
 			}
 		}
+
 		_currentFigure->move(sf::Vector2i(0, 1));
 		
 		if (_figuresIndecesQueue.size() <= 20)
 			_get_new_figures_to_queue();
-		
-
-		Matrix resultMatrix = _matrixForWork;
-		resultMatrix.add_figure(*_currentFigure);
-		_doubleFrame->set_matrix(resultMatrix);
-		_doubleFrame->swap_buffers();
 
 		_clock.restart();
 	}
+	else
+	{
+		if (_controller->is_move_right())
+		{
+			if (!isMoveRight)
+			{
+				bool isCanMove = true;
+				for (U8 i = 0; i < 4; i++)
+				{
+					sf::Vector2i pos = figureElements[i].position;
+					if (pos.y >= 0 && (pos.x >= 9 || buffer[pos.x + 1][pos.y]))
+						isCanMove = false;
+				}
+				if (isCanMove)
+					_currentFigure->move(sf::Vector2i(1, 0));
+			}
+			isMoveRight = true;
+		}
+		else isMoveRight = false;
+
+		if (_controller->is_move_left())
+		{
+			if (!isMoveLeft)
+			{
+				bool isCanMove = true;
+				for (U8 i = 0; i < 4; i++)
+				{
+					sf::Vector2i pos = figureElements[i].position;
+					if (pos.y >= 0 && (pos.x <= 0 || buffer[pos.x - 1][pos.y]))
+						isCanMove = false;
+				}
+				if (isCanMove)
+					_currentFigure->move(sf::Vector2i(-1, 0));
+			}
+			isMoveLeft = true;
+		}
+		else isMoveLeft = false;
+
+		if (_controller->is_rotate_right())
+		{
+			if (!isRotateRight)
+			{
+				bool isCanRotate = true;
+				// condition : TODO
+				if (isCanRotate)
+					_currentFigure->rotate_right();
+			}
+			isRotateRight = true;
+		}
+		else isRotateRight = false;
+	}
+
+	Matrix resultMatrix = _matrixForWork;
+	resultMatrix.add_figure(*_currentFigure);
+	_doubleFrame->set_matrix(resultMatrix);
+	_doubleFrame->swap_buffers();
+
+
+
 }
 
 void RealPlayer::exchange_data()

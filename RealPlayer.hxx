@@ -9,6 +9,8 @@
 
 class RealPlayer : public PlayerObject
 {
+	// boolean variables for pressing buttons.
+	bool isMoveRight, isMoveLeft, isRotateLeft, isRotateRight, isDrop, isAccelerate;
 	// clock for managing speed of game.
 	sf::Clock _clock;
 	// controller for managing.
