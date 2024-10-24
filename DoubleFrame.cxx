@@ -17,10 +17,18 @@ void DoubleFrame::swap_buffers()
 }
 
 // return ready matrix.
-Matrix* DoubleFrame::get_matrix() const
+Matrix DoubleFrame::get_matrix() const
 {
 	std::lock_guard<std::mutex> lock(_mtx);
-	return _readyMatrix->clone();
+	return Matrix(*_readyMatrix);
+}
+
+// set matrix to working matrix;
+void DoubleFrame::set_matrix(const Matrix& mat)
+{
+	std::lock_guard<std::mutex> lock(_mtx);
+	delete _workingMatrix;
+	_workingMatrix = new Matrix(mat);
 }
 
 // destructor.

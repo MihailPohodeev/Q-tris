@@ -9,9 +9,13 @@
 #include "ScoreTable.hxx"
 #include "KeyboardController1.hxx"
 #include "JoystickController.hxx"
+#include "Window.hxx"
+#include "RealPlayer.hxx"
 
 extern sf::RenderWindow* window;
 sf::Font* mainFont;
+
+Figure** figuresArray;
 
 int main(int argc, char** argv)
 {
@@ -22,16 +26,27 @@ int main(int argc, char** argv)
 	mainFont = new sf::Font;
 	mainFont->loadFromFile("Fonts/GASAGRANDE.ttf");
 
-	//sf::CircleShape shape(100);
-	
-	//mat.add_element({sf::Color(128, 200, 255, 255), sf::Vector2i(5, 5)});
-	
+	figuresArray = new Figure*[7];
+	figuresArray[0] = new O_Figure();
+	figuresArray[1] = new J_Figure();
+	figuresArray[2] = new L_Figure();
+	figuresArray[3] = new I_Figure();
 
-	ScoreTable sc(sf::Vector2f(200, 400));
-	sc.set_position(sf::Vector2f(300, 100));
-	
+	figuresArray[0]->set_color(sf::Color(0, 255, 0, 255));
+	figuresArray[1]->set_color(sf::Color(255, 0, 0, 255));
+	figuresArray[2]->set_color(sf::Color(0, 0, 255, 255));
+	figuresArray[3]->set_color(sf::Color(128, 128, 0, 255));
+
+	std::cout << "All painted!\n"	;
+
 	KeyboardController1 controller;
-	JoystickController joystick(0);
+
+	RealPlayer rp;
+	rp.set_controller(&controller);
+
+	Window realWin(sf::Vector2f(400.f, 400.f));
+	realWin.set_player_object(&rp);
+	realWin.set_position(sf::Vector2f(200.f, 100.f));
 
 	while (window->isOpen())
 	{
@@ -42,23 +57,16 @@ int main(int argc, char** argv)
 				window->close();
 		}
 
-		if (joystick.is_drop())
-			std::cout << "drop\n";
-		if (joystick.is_accelerate())
-			std::cout << "accelerate\n";
-		if (joystick.is_rotate_right())
-			std::cout << "rotate-right\n";
-		if (joystick.is_rotate_left())
-			std::cout << "rotate-left\n";
-		if (joystick.is_move_right())
-			std::cout << "right\n";
-		if (joystick.is_move_left())
-			std::cout << "left\n";
+		realWin.update();
 
 		window->clear();
-		sc.render();
+		realWin.render();
 		window->display();
 	}
+
+	for (U8 i = 0; i < 4; i++)
+		delete figuresArray[i];
+	delete figuresArray;
 	delete mainFont;
 	delete window;
 	return 0;

@@ -13,7 +13,10 @@ void Figure::create_rotate_positions(U8 maxIndex)
 //-----PUBLIC-METHODS-------------
 //--------------------------------
 // construct.
-Figure::Figure() : _currentRotateIndex(0) {}
+Figure::Figure() : _currentRotateIndex(0) 
+{
+	set_color(sf::Color(255, 255, 255, 255));
+}
 
 // copy-constructor.
 Figure::Figure(const Figure& fig)

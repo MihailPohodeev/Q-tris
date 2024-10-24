@@ -43,11 +43,14 @@ void Matrix::add_figure(const Figure& figure)
 void Matrix::add_element(const struct ElementData& elem)
 {
 	sf::Vector2i pos = elem.position;
-	if (!_buffer[pos.x][pos.y])
+	if (pos.x >= 0 && pos.x < 10 && pos.y >= 0 && pos.y < 20)
 	{
-		_buffer[pos.x][pos.y] = new struct ElementData;
+		if (!_buffer[pos.x][pos.y])
+		{
+			_buffer[pos.x][pos.y] = new struct ElementData;
+		}
+		*(_buffer[pos.x][pos.y]) = elem;
 	}
-	*(_buffer[pos.x][pos.y]) = elem;
 }
 
 // return buffer's address.

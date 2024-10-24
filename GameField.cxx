@@ -3,7 +3,10 @@
 extern sf::RenderWindow* window;
 
 // constructor
-GameField::GameField(const sf::Vector2f& size) : _shape(size), _element(sf::Vector2f(size.x / 10, size.y / 20)) {}
+GameField::GameField(const sf::Vector2f& size) : _shape(size), _element(sf::Vector2f(size.x / 10, size.y / 20)) 
+{
+	_shape.setFillColor(sf::Color(50, 50, 50, 255));
+}
 
 // set matrix
 void GameField::set_matrix(const Matrix& matrix)
@@ -15,6 +18,12 @@ void GameField::set_matrix(const Matrix& matrix)
 sf::Vector2f GameField::get_position() const
 {
 	return _shape.getPosition();
+}
+
+// set new position.
+void GameField::set_position(const sf::Vector2f& pos)
+{
+	_shape.setPosition(pos);
 }
 
 // render game field with elements.

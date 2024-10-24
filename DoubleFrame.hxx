@@ -15,7 +15,9 @@ public:
 	// swap buffers for info exchanging.
 	void swap_buffers();
 	// return ready Matrix.
-	Matrix* get_matrix() const;
+	Matrix get_matrix() const;
+	// set Matrix to working matrix :
+	void set_matrix(const Matrix&);
 	//destructor.
 	~DoubleFrame();
 };

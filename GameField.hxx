@@ -18,6 +18,8 @@ public:
 	GameField(const sf::Vector2f&);
 	// get position of GameField.
 	sf::Vector2f get_position() const;
+	// set new position.
+	void set_position(const sf::Vector2f&);
 	// set new matrix.
 	void set_matrix(const Matrix& matrix);
 	// render GameField.
