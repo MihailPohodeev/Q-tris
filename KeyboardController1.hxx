@@ -6,6 +6,7 @@
 class KeyboardController1 : public Controller
 {
 public:
+	KeyboardController1();
 	bool is_rotate_right()	override;
 	bool is_rotate_left()	override;
 	bool is_move_right()	override;

@@ -25,6 +25,8 @@ void Window::update()
 	_scoreTable.set_lines(_player->get_lines());
 	_scoreTable.set_level(_player->get_level());
 	_gameField.set_matrix(_doubleFrame.get_matrix());
+	Matrix mat = _doubleFrame.get_matrix();
+	struct ElementData*** buff = mat.get_buffer();
 }
 
 void Window::render() const

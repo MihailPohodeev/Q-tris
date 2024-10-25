@@ -32,11 +32,15 @@ void GameField::render() const
 	window->draw(_shape);
 	struct ElementData*** buf = _matrix.get_buffer();
 	for(U8 i = 0; i < 10; i++)
+	{
 		for(U8 j = 0; j < 20; j++)
+		{
 			if (buf[i][j])
 			{
 				_element.set_color(buf[i][j]->color);
 				_element.set_position(this->get_position() + sf::Vector2f(buf[i][j]->position.x * _element.get_size().x, buf[i][j]->position.y * _element.get_size().y));
 				_element.render();
 			}
+		}
+	}
 }

@@ -2,17 +2,15 @@
 
 extern Figure** figuresArray;
 
+// contructor.
 RealPlayer::RealPlayer() : PlayerObject()
 {
 	_get_new_figures_to_queue();
 	_currentFigure = nullptr;
 	_update_the_figure();
-
-	isMoveRight = isMoveLeft = false;
-	isRotateRight = isRotateLeft = false;
-	isDrop = isAccelerate = false;
 }
 
+// push into queue new figures.
 void RealPlayer::_update_the_figure()
 {
 	if (_currentFigure)
@@ -23,21 +21,24 @@ void RealPlayer::_update_the_figure()
 	_currentFigure->set_position(sf::Vector2i(4, -1));
 }
 
+// set controller for figure movement.
 void RealPlayer::set_controller(Controller* cntrlr)
 {
 	_controller = cntrlr;
 }
 
+// fill queue by new figures.
 void RealPlayer::_get_new_figures_to_queue()
 {
 	for (U8 i = 0; i < 30; i++)
 	{
-		U8 j = (U8)(random() % 4);
+		U8 j = (U8)(random() % 7);
 		_figuresIndecesQueue.push(j);
 		std::cout << j;
 	}
 }
 
+// update player's state.
 void RealPlayer::update()
 {
 	struct ElementData*** buffer = _matrixForWork.get_buffer();
@@ -45,8 +46,40 @@ void RealPlayer::update()
 	struct ElementData figureElements[4];
 	_currentFigure->get_all_elements(figureElements);
 
-	if (_clock.getElapsedTime().asMicroseconds() > (1'000'000 / _level))
+	// accelerate the figure - if player press button 'accelerate'.
+	_speed = (_controller->is_accelerate()) ? 100'000 / _level : 1'000'000 / _level;
+
+	if (_clock.getElapsedTime().asMicroseconds() > _speed)
 	{
+		// destroy full lines.
+		U8 countOfDestroyableLines = 0;
+		for (U8 j = 0 ; j < 20; j++)
+		{
+			bool isDestroyLine = true;
+			for (U8 i = 0; i < 10; i++)
+			{
+				if (!buffer[i][j])
+					isDestroyLine = false;
+			}
+			if (isDestroyLine)
+			{
+				countOfDestroyableLines++;
+				for (U8 m = j; m > 0; m--)
+				{
+					for (U8 n = 0; n < 10; n++)
+					{
+						if (buffer[n][m])
+							delete buffer[n][m];
+						buffer[n][m] = buffer[n][m - 1];
+						buffer[n][m - 1] = nullptr;
+						if (buffer[n][m])
+							buffer[n][m]->position = sf::Vector2i(n, m);
+					}
+				}
+			}
+		}
+		
+		// paste figure into matrix, if it touch the top of cup.
 		for (U8 i = 0; i < 4; i++)
 		{
 			struct ElementData* currentElem = &figureElements[i];
@@ -56,6 +89,7 @@ void RealPlayer::update()
 				{
 					_matrixForWork.add_figure(*_currentFigure);
 					_update_the_figure();
+					break;
 				}
 			}
 		}
@@ -71,63 +105,202 @@ void RealPlayer::update()
 	{
 		if (_controller->is_move_right())
 		{
-			if (!isMoveRight)
+			bool isCanMove = true;
+			for (U8 i = 0; i < 4; i++)
 			{
-				bool isCanMove = true;
-				for (U8 i = 0; i < 4; i++)
-				{
-					sf::Vector2i pos = figureElements[i].position;
-					if (pos.y >= 0 && (pos.x >= 9 || buffer[pos.x + 1][pos.y]))
-						isCanMove = false;
-				}
-				if (isCanMove)
-					_currentFigure->move(sf::Vector2i(1, 0));
+				sf::Vector2i pos = figureElements[i].position;
+				if (pos.y >= 0 && (pos.x >= 9 || buffer[pos.x + 1][pos.y]))
+					isCanMove = false;
 			}
-			isMoveRight = true;
+			if (isCanMove)
+				_currentFigure->move(sf::Vector2i(1, 0));
 		}
-		else isMoveRight = false;
 
 		if (_controller->is_move_left())
 		{
-			if (!isMoveLeft)
+			bool isCanMove = true;
+			for (U8 i = 0; i < 4; i++)
 			{
-				bool isCanMove = true;
-				for (U8 i = 0; i < 4; i++)
-				{
-					sf::Vector2i pos = figureElements[i].position;
-					if (pos.y >= 0 && (pos.x <= 0 || buffer[pos.x - 1][pos.y]))
-						isCanMove = false;
-				}
-				if (isCanMove)
-					_currentFigure->move(sf::Vector2i(-1, 0));
+				sf::Vector2i pos = figureElements[i].position;
+				if (pos.y >= 0 && (pos.x <= 0 || buffer[pos.x - 1][pos.y]))
+					isCanMove = false;
 			}
-			isMoveLeft = true;
+			if (isCanMove)
+				_currentFigure->move(sf::Vector2i(-1, 0));
 		}
-		else isMoveLeft = false;
 
+		
 		if (_controller->is_rotate_right())
 		{
-			if (!isRotateRight)
+			bool isCanRotateRight = true;
+			sf::Vector2i pos = _currentFigure->get_position();
+			_currentFigure->rotate_right();
+			enum direction {NONE, LEFT, RIGHT} dir;
+			dir = direction::NONE;
+
+			struct ElementData elems[4];
+			_currentFigure->get_all_elements(elems);
+			for (U8 i = 1; i < 4; i++)
 			{
-				bool isCanRotate = true;
-				// condition : TODO
-				if (isCanRotate)
-					_currentFigure->rotate_right();
+				sf::Vector2i position = elems[i].position;
+				if (position.x > 9)
+				{
+					if (dir == direction::LEFT)
+					{
+						isCanRotateRight = false;
+						break;
+					}
+					dir = direction::RIGHT;
+				}
+				else if (position.x < 0)
+				{
+					if (dir == direction::RIGHT)
+					{
+						isCanRotateRight = false;
+						break;
+					}
+					dir = direction::LEFT;
+				}
+				else if (buffer[position.x][position.y])
+				{
+					if (position.x <= elems[0].position.x)
+					{
+						if (dir == direction::RIGHT)
+						{
+							isCanRotateRight = false;
+							break;
+						}
+						dir = direction::LEFT;
+					}
+					else if (position.x > elems[0].position.x)
+					{
+						if (dir == direction::LEFT)
+						{
+							isCanRotateRight = false;
+							break;
+						}
+						dir = direction::RIGHT;
+					}
+				}
 			}
-			isRotateRight = true;
+
+			if (dir != direction::NONE)
+			{
+				if (dir == direction::RIGHT)
+				{
+					for (U8 i = 0; i < 4; i++)
+					{
+						sf::Vector2i position = elems[i].position;
+						if (position.x < 10)
+						{
+							if (buffer[position.x - 1][position.y])
+							{
+								isCanRotateRight = false;
+								break;
+							}
+						}
+					}
+					if (isCanRotateRight)
+					{
+						while(true)
+						{
+							_currentFigure->move(sf::Vector2i(-1, 0));
+							_currentFigure->get_all_elements(elems);
+							bool condition1 = true;
+							bool condition2 = false;
+							for (U8 i = 0; i < 4; i++)
+							{
+								sf::Vector2i position = elems[i].position;
+								if (position.x >= 10 || buffer[position.x][position.y])
+									condition1 = false;
+								if (position.x <= 10 && buffer[position.x - 1][position.y])
+									condition2 = true;
+							}
+							if (condition1)
+								break;
+							if (condition2)
+							{
+								isCanRotateRight = false;
+								break;
+							}
+						}
+					}
+				}
+				else if (dir == direction::LEFT)
+				{
+					for (U8 i = 0; i < 4; i++)
+					{
+						sf::Vector2i position = elems[i].position;
+						if (position.x >= 0)
+						{
+							if (buffer[position.x + 1][position.y])
+							{
+								isCanRotateRight = false;
+								break;
+							}
+						}
+					}
+
+					if (isCanRotateRight)
+					{
+						while(true)
+						{
+							_currentFigure->move(sf::Vector2i(1, 0));
+							_currentFigure->get_all_elements(elems);
+							bool condition1 = true;
+							bool condition2 = false;
+							for (U8 i = 0; i < 4; i++)
+							{
+								sf::Vector2i position = elems[i].position;
+								if (position.x < 0 || buffer[position.x][position.y])
+									condition1 = false;
+								if (position.x >= 0 && buffer[position.x + 1][position.y])
+									condition2 = true;
+							}
+							if (condition1)
+								break;
+							if (condition2)
+							{
+								isCanRotateRight = false;
+								break;
+							}
+						}
+					}
+				}
+			}
+
+			if (!isCanRotateRight)
+			{
+				_currentFigure->rotate_left();
+				_currentFigure->set_position(pos);
+			}
 		}
-		else isRotateRight = false;
+
+		if (_controller->is_drop())
+		{
+			sf::Vector2i offset(0, 20);
+			for (U8 i = 0; i < 4; i++)
+			{
+				sf::Vector2i pos = figureElements[i].position;
+				if (pos.x < 0 || pos.x >= 10 || pos.y < 0 || pos.y > 19)
+					continue;
+				U8 yOffset = 0;
+				while(pos.y + yOffset < 19 && !buffer[pos.x][pos.y + yOffset + 1])
+					yOffset++;
+				if (yOffset < offset.y)
+					offset.y = yOffset;
+			}
+			_currentFigure->move(offset);
+		}
 	}
 
 	Matrix resultMatrix = _matrixForWork;
 	resultMatrix.add_figure(*_currentFigure);
 	_doubleFrame->set_matrix(resultMatrix);
 	_doubleFrame->swap_buffers();
-
-
-
 }
 
+// share my data with other players.
 void RealPlayer::exchange_data()
 {
 	;// TODO

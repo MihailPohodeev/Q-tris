@@ -6,6 +6,9 @@
 #include "Figures/I_Figure.hxx"
 #include "Figures/J_Figure.hxx"
 #include "Figures/L_Figure.hxx"
+#include "Figures/T_Figure.hxx"
+#include "Figures/S_Figure.hxx"
+#include "Figures/Z_Figure.hxx"
 #include "ScoreTable.hxx"
 #include "KeyboardController1.hxx"
 #include "JoystickController.hxx"
@@ -31,11 +34,17 @@ int main(int argc, char** argv)
 	figuresArray[1] = new J_Figure();
 	figuresArray[2] = new L_Figure();
 	figuresArray[3] = new I_Figure();
+	figuresArray[4] = new T_Figure();
+	figuresArray[5] = new S_Figure();
+	figuresArray[6] = new Z_Figure();
 
 	figuresArray[0]->set_color(sf::Color(0, 255, 0, 255));
 	figuresArray[1]->set_color(sf::Color(255, 0, 0, 255));
 	figuresArray[2]->set_color(sf::Color(0, 0, 255, 255));
-	figuresArray[3]->set_color(sf::Color(128, 128, 0, 255));
+	figuresArray[3]->set_color(sf::Color(255, 255, 0, 255));
+	figuresArray[4]->set_color(sf::Color(0, 255, 255, 255));
+	figuresArray[5]->set_color(sf::Color(255, 0, 255, 255));
+	figuresArray[6]->set_color(sf::Color(200, 128, 128, 255));
 
 	std::cout << "All painted!\n"	;
 
