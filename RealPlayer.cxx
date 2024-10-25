@@ -47,7 +47,7 @@ void RealPlayer::update()
 	_currentFigure->get_all_elements(figureElements);
 
 	// accelerate the figure - if player press button 'accelerate'.
-	_speed = (_controller->is_accelerate()) ? 100'000 / _level : 1'000'000 / _level;
+	_speed = (_controller->is_accelerate()) ? 100'000 / (_level + 1) : 1'000'000 / (_level + 1);
 
 	if (_clock.getElapsedTime().asMicroseconds() > _speed)
 	{
@@ -77,6 +77,22 @@ void RealPlayer::update()
 					}
 				}
 			}
+		}
+
+		_lines += countOfDestroyableLines;
+		switch (countOfDestroyableLines)
+		{
+			case(1):
+				_score += 40 * (_level + 1);
+				break;
+			case(2):
+				_score += 100 * (_level + 1);
+				break;
+			case(3):
+				_score += 300 * (_level + 1);
+				break;
+			case(4):
+				_score += 1200 * (_level + 1);
 		}
 		
 		// paste figure into matrix, if it touch the top of cup.

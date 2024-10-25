@@ -15,7 +15,7 @@ protected:
 
 	DoubleFrame* _doubleFrame;
 public:
-	PlayerObject() : _score(0), _lines(0), _level(1) {}
+	PlayerObject() : _score(0), _lines(0), _level(0) {}
 	virtual void update() = 0;
 	virtual void exchange_data() = 0;
 	virtual void set_double_frame(DoubleFrame* df) { _doubleFrame = df; }
