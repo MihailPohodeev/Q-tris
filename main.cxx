@@ -14,11 +14,13 @@
 #include "JoystickController.hxx"
 #include "Window.hxx"
 #include "RealPlayer.hxx"
+#include "Server.hxx"
 
 extern sf::RenderWindow* window;
 sf::Font* mainFont;
 
 Figure** figuresArray;
+Server server("127.0.0.1", 18881);
 
 int main(int argc, char** argv)
 {
@@ -46,17 +48,38 @@ int main(int argc, char** argv)
 	figuresArray[5]->set_color(sf::Color(255, 0, 255, 255));
 	figuresArray[6]->set_color(sf::Color(200, 128, 128, 255));
 
-	std::cout << "All painted!\n"	;
+	std::cout << "All painted!\n";
 
 	KeyboardController1 controller;
 	JoystickController joyControll(0);
 
 	RealPlayer rp;
-	rp.set_controller(&joyControll);
+	rp.set_controller(&controller);
 
 	Window realWin(sf::Vector2f(400.f, 400.f));
 	realWin.set_player_object(&rp);
 	realWin.set_position(sf::Vector2f(200.f, 100.f));
+
+	if (strcmp(argv[1], "create-room") == 0)
+	{
+		json createRoom;
+		createRoom["type"] = "create-room";
+		createRoom["username"] = "KalKalich";
+		server.send_data(createRoom.dump());
+		std::string responce = server.receive_data();
+		std::cout << "responce : " << responce << '\n';
+	}
+	else if (strcmp(argv[1], "connect-to-room") == 0)
+	{
+		json connectToRoom;
+		connectToRoom["type"] = "connect-to-room";
+		connectToRoom["room-id"] = argv[2];
+		connectToRoom["username"] = "Second Dodick";
+		std::cout << connectToRoom.dump() << '\n';
+		server.send_data(connectToRoom.dump());
+		std::string responce = server.receive_data();
+		std::cout << "responce : " << responce << '\n';
+	}
 
 	while (window->isOpen())
 	{
@@ -66,6 +89,9 @@ int main(int argc, char** argv)
 			if (event.type == sf::Event::Closed)
 				window->close();
 		}
+		//server.send_data("Looser");
+		//std::string message = server.receive_data();
+		//std::cout << message << '\n';
 
 		realWin.update();
 
