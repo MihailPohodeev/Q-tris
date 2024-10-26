@@ -49,9 +49,10 @@ int main(int argc, char** argv)
 	std::cout << "All painted!\n"	;
 
 	KeyboardController1 controller;
+	JoystickController joyControll(0);
 
 	RealPlayer rp;
-	rp.set_controller(&controller);
+	rp.set_controller(&joyControll);
 
 	Window realWin(sf::Vector2f(400.f, 400.f));
 	realWin.set_player_object(&rp);

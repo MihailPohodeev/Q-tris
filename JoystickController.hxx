@@ -1,12 +1,15 @@
 #ifndef _JOYSTICK_CONTROLLER_H_
 #define _JOYSTICK_CONTROLLER_H_
 
+#include <SFML/Graphics.hpp>
 #include "setup.hxx"
 #include "Controller.hxx"
 
 class JoystickController : public Controller
 {
+	sf::Clock _clock;
 	U32 _joystickDescriptor;
+	U32 _deltaTime;
 public:
 	JoystickController(U32);
 	bool is_rotate_right()  override;

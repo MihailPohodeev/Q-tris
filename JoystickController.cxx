@@ -2,13 +2,21 @@
 #include "JoystickController.hxx"
 
 // constructor.
-JoystickController::JoystickController(U32 desc) : _joystickDescriptor(desc) {}
+JoystickController::JoystickController(U32 desc) : _joystickDescriptor(desc), _deltaTime(125) {}
 
 // rotate right the figure.
 bool JoystickController::is_rotate_right()
 {
 	if (sf::Joystick::isButtonPressed(_joystickDescriptor, 0))
-		return true;
+	{
+		if (!_isRotateRight)
+		{
+			_isRotateRight = true;
+			return true;
+		}
+	}
+	else
+		_isRotateRight = false;
 	return false;
 }
 
@@ -26,7 +34,13 @@ bool JoystickController::is_move_right()
 	float x = sf::Joystick::getAxisPosition(_joystickDescriptor, sf::Joystick::X);
 	x /= 100.f;
 	if (x > 0.5f)
-		return true;
+	{
+		if (_clock.getElapsedTime().asMilliseconds() > _deltaTime)
+		{
+			_clock.restart();
+			return true;
+		}
+	}
 	return false;
 }
 
@@ -36,7 +50,15 @@ bool JoystickController::is_move_left()
 	float x = sf::Joystick::getAxisPosition(_joystickDescriptor, sf::Joystick::X);
 	x /= 100.f;
 	if (x < -0.5f)
-		return true;
+	{
+		if (_clock.getElapsedTime().asMilliseconds() > _deltaTime)
+		{
+			_clock.restart();
+			return true;
+		}
+	}
+	else
+		_isMoveLeft = false;
 	return false;
 }
 
@@ -44,7 +66,14 @@ bool JoystickController::is_move_left()
 bool JoystickController::is_drop()
 {
         if (sf::Joystick::isButtonPressed(_joystickDescriptor, 2))
-                return true;
+	{
+		if (!_isDrop)
+		{
+			_isDrop = true;
+	                return true;
+		}
+	}
+	else _isDrop = false;
         return false;
 }
 
