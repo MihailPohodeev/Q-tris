@@ -14,6 +14,7 @@
 #include "JoystickController.hxx"
 #include "Window.hxx"
 #include "RealPlayer.hxx"
+#include "NetworkPlayer.hxx"
 #include "Server.hxx"
 
 extern sf::RenderWindow* window;
@@ -48,17 +49,21 @@ int main(int argc, char** argv)
 	figuresArray[5]->set_color(sf::Color(255, 0, 255, 255));
 	figuresArray[6]->set_color(sf::Color(200, 128, 128, 255));
 
-	std::cout << "All painted!\n";
-
 	KeyboardController1 controller;
+	KeyboardController1 controller1;
 	JoystickController joyControll(0);
 
 	RealPlayer rp;
+	NetworkPlayer np;
 	rp.set_controller(&controller);
 
-	Window realWin(sf::Vector2f(400.f, 400.f));
+	Window realWin(sf::Vector2f(300.f, 300.f));
 	realWin.set_player_object(&rp);
-	realWin.set_position(sf::Vector2f(200.f, 100.f));
+	realWin.set_position(sf::Vector2f(50.f, 100.f));
+	
+	Window netWin(sf::Vector2f(300.f, 300.f));
+	netWin.set_player_object(&np);
+	netWin.set_position(sf::Vector2f(400.f, 100.f));
 
 	if (strcmp(argv[1], "create-room") == 0)
 	{
@@ -81,6 +86,7 @@ int main(int argc, char** argv)
 		std::cout << "responce : " << responce << '\n';
 	}
 
+
 	while (window->isOpen())
 	{
 		sf::Event event;
@@ -94,9 +100,11 @@ int main(int argc, char** argv)
 		//std::cout << message << '\n';
 
 		realWin.update();
+		netWin.update();
 
 		window->clear();
 		realWin.render();
+		netWin.render();
 		window->display();
 	}
 

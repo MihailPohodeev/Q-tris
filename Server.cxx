@@ -4,6 +4,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include "Server.hxx"
+#include "json.hpp"
 
 // contructor.
 Server::Server(const std::string& addr, U16 port)
@@ -28,6 +29,26 @@ Server::Server(const std::string& addr, U16 port)
 	{
 		std::cerr << "Server connection error!\n";
 	}
+}
+
+std::string Server::create_room(const std::string& name)
+{
+	json j;
+	j["type"] = "create-room";
+	j["username"] = name;
+	send_data(j.dump());
+	std::string responce = receive_data();
+	j = json::parse(responce);
+	return j["room-id"];
+}
+
+void Server::connect_to_room(const std::string& id, const std::string& name)
+{
+	json j;
+	j["type"] = "connect-to-room";
+	j["room-id"] = id;
+	j["username"] = name;
+	send_data(j.dump());
 }
 
 // send data to server.
