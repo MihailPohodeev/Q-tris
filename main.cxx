@@ -16,6 +16,8 @@
 #include "RealPlayer.hxx"
 #include "NetworkPlayer.hxx"
 #include "Server.hxx"
+#include "Scene.hxx"
+#include "UI/MainMenu.hxx"
 
 extern sf::RenderWindow* window;
 sf::Font* mainFont;
@@ -23,15 +25,17 @@ sf::Font* mainFont;
 Figure** figuresArray;
 Server server("127.0.0.1", 18881);
 
+int SCR_WIDTH  = 800;
+int SCR_HEIGHT = 600;
+
 int main(int argc, char** argv)
 {
-	int SCR_WIDTH =  800;
-	int SCR_HEIGHT = 600;
 	window = new sf::RenderWindow(sf::VideoMode(SCR_WIDTH, SCR_HEIGHT), "Q-tris");
 
 	mainFont = new sf::Font;
 	mainFont->loadFromFile("Fonts/GASAGRANDE.ttf");
 
+	/*
 	figuresArray = new Figure*[7];
 	figuresArray[0] = new O_Figure();
 	figuresArray[1] = new J_Figure();
@@ -85,7 +89,9 @@ int main(int argc, char** argv)
 		std::string responce = server.receive_data();
 		std::cout << "responce : " << responce << '\n';
 	}
-
+	*/
+	
+	Scene* currentScene = new MainMenu();
 
 	while (window->isOpen())
 	{
@@ -99,17 +105,16 @@ int main(int argc, char** argv)
 		//std::string message = server.receive_data();
 		//std::cout << message << '\n';
 
-		realWin.update();
-		netWin.update();
+		currentScene->update();
 
 		window->clear();
-		realWin.render();
-		netWin.render();
+		currentScene->render();
 		window->display();
 	}
 
-	for (U8 i = 0; i < 4; i++)
-		delete figuresArray[i];
+//	for (U8 i = 0; i < 4; i++)
+//		delete figuresArray[i];
+	delete currentScene;
 	delete figuresArray;
 	delete mainFont;
 	delete window;
