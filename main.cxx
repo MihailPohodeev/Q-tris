@@ -1,4 +1,6 @@
 #include <iostream>
+#include <fstream>
+#include "json.hpp"
 #include "Figures/Element.hxx"
 #include "Matrix.hxx"
 #include "GameField.hxx"
@@ -19,23 +21,59 @@
 #include "Scene.hxx"
 #include "UI/MainMenu.hxx"
 
+using json = nlohmann::json;
+
 extern sf::RenderWindow* window;
 sf::Font* mainFont;
 
 Figure** figuresArray;
-Server server("127.0.0.1", 18881);
+Server* server;
 
 int SCR_WIDTH  = 800;
 int SCR_HEIGHT = 600;
 
 int main(int argc, char** argv)
 {
+	// server initialization.
+	
+	std::ifstream configStream("config.json");
+	if (!configStream.is_open()) {
+		std::cerr << "Could not open the config file!" << std::endl;
+		return 1;
+	}
+
+	json config;
+
+	try
+	{
+		configStream >> config;
+	}
+	catch (const json::parse_error& e)
+	{
+		std::cerr << "Parse error : " << e.what() << '\n';
+		return 1;
+	}
+
+	std::string ipAddress;
+	U16 port;
+	try
+	{
+		ipAddress = config["Server"]["IPAddress"];
+		port = config["Server"]["Port"];
+	}
+	catch (const json::type_error& e)
+	{
+		std::cerr << "Errors in config.json file : " << e.what() << '\n';
+	}
+
+	server = new Server(ipAddress, port);
+
+	// window initialization.
 	window = new sf::RenderWindow(sf::VideoMode(SCR_WIDTH, SCR_HEIGHT), "Q-tris");
 
 	mainFont = new sf::Font;
 	mainFont->loadFromFile("Fonts/GASAGRANDE.ttf");
 
-	/*
 	figuresArray = new Figure*[7];
 	figuresArray[0] = new O_Figure();
 	figuresArray[1] = new J_Figure();
@@ -69,29 +107,7 @@ int main(int argc, char** argv)
 	netWin.set_player_object(&np);
 	netWin.set_position(sf::Vector2f(400.f, 100.f));
 
-	if (strcmp(argv[1], "create-room") == 0)
-	{
-		json createRoom;
-		createRoom["type"] = "create-room";
-		createRoom["username"] = "KalKalich";
-		server.send_data(createRoom.dump());
-		std::string responce = server.receive_data();
-		std::cout << "responce : " << responce << '\n';
-	}
-	else if (strcmp(argv[1], "connect-to-room") == 0)
-	{
-		json connectToRoom;
-		connectToRoom["type"] = "connect-to-room";
-		connectToRoom["room-id"] = argv[2];
-		connectToRoom["username"] = "Second Dodick";
-		std::cout << connectToRoom.dump() << '\n';
-		server.send_data(connectToRoom.dump());
-		std::string responce = server.receive_data();
-		std::cout << "responce : " << responce << '\n';
-	}
-	*/
-	
-	Scene* currentScene = new MainMenu();
+	//Scene* currentScene = new MainMenu();
 
 	while (window->isOpen())
 	{
@@ -105,18 +121,19 @@ int main(int argc, char** argv)
 		//std::string message = server.receive_data();
 		//std::cout << message << '\n';
 
-		currentScene->update();
+		realWin.update();
 
 		window->clear();
-		currentScene->render();
+		realWin.render();
 		window->display();
 	}
 
-//	for (U8 i = 0; i < 4; i++)
-//		delete figuresArray[i];
-	delete currentScene;
+	for (U8 i = 0; i < 7; i++)
+		delete figuresArray[i];
+	//delete currentScene;
 	delete figuresArray;
 	delete mainFont;
+	delete server;
 	delete window;
 	return 0;
 }
