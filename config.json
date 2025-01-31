@@ -2,5 +2,11 @@
 	"Server" : {
 		"IPAddress" : "127.0.0.1",
 		"Port" : 18881
+	},
+	"Client" : {
+		"Mode" : "Multiplayer",
+		"PlayersCount" : 1,
+		"Queue" : "Same",
+		"StartLevel" : 0
 	}
 }

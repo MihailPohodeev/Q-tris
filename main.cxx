@@ -20,6 +20,7 @@
 #include "Server.hxx"
 #include "Scene.hxx"
 #include "UI/MainMenu.hxx"
+#include "MultiplayerScene.hxx"
 
 using json = nlohmann::json;
 
@@ -56,10 +57,12 @@ int main(int argc, char** argv)
 
 	std::string ipAddress;
 	U16 port;
+	U8 playerCount = 0;
 	try
 	{
 		ipAddress = config["Server"]["IPAddress"];
 		port = config["Server"]["Port"];
+		playerCount = config["Client"]["PlayersCount"];
 	}
 	catch (const json::type_error& e)
 	{
@@ -71,9 +74,11 @@ int main(int argc, char** argv)
 	// window initialization.
 	window = new sf::RenderWindow(sf::VideoMode(SCR_WIDTH, SCR_HEIGHT), "Q-tris");
 
+	// font initialization.
 	mainFont = new sf::Font;
 	mainFont->loadFromFile("Fonts/GASAGRANDE.ttf");
 
+	// array with figures init.
 	figuresArray = new Figure*[7];
 	figuresArray[0] = new O_Figure();
 	figuresArray[1] = new J_Figure();
@@ -91,23 +96,27 @@ int main(int argc, char** argv)
 	figuresArray[5]->set_color(sf::Color(255, 0, 255, 255));
 	figuresArray[6]->set_color(sf::Color(200, 128, 128, 255));
 
+	/*
 	KeyboardController1 controller;
 	KeyboardController1 controller1;
 	JoystickController joyControll(0);
-
+	
 	RealPlayer rp;
 	NetworkPlayer np;
 	rp.set_controller(&controller);
 
-	Window realWin(sf::Vector2f(300.f, 300.f));
+	Window realWin(sf::Vector2f(500.f, 500.f));
 	realWin.set_player_object(&rp);
-	realWin.set_position(sf::Vector2f(50.f, 100.f));
+	realWin.set_position(sf::Vector2f(150.f, 50.f));
 	
 	Window netWin(sf::Vector2f(300.f, 300.f));
 	netWin.set_player_object(&np);
 	netWin.set_position(sf::Vector2f(400.f, 100.f));
 
 	//Scene* currentScene = new MainMenu();
+	*/
+
+	MultiplayerScene multiplayerScene(playerCount, true, 0);
 
 	while (window->isOpen())
 	{
@@ -120,11 +129,11 @@ int main(int argc, char** argv)
 		//server.send_data("Looser");
 		//std::string message = server.receive_data();
 		//std::cout << message << '\n';
-
-		realWin.update();
-
+		//realWin.update();
+		//realWin.render();
 		window->clear();
-		realWin.render();
+		multiplayerScene.update();
+		multiplayerScene.render();
 		window->display();
 	}
 
@@ -134,6 +143,6 @@ int main(int argc, char** argv)
 	delete figuresArray;
 	delete mainFont;
 	delete server;
-	delete window;
+	//delete window;
 	return 0;
 }
