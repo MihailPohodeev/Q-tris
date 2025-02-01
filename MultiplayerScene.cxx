@@ -6,11 +6,13 @@ extern int SCR_HEIGHT;
 
 MultiplayerScene::MultiplayerScene(U8 playersCount, bool isSameQueue, U8 startLevel) : _windows(playersCount)
 {
+	// check if players count is unavalible.
 	if (playersCount < 2)
 		throw TooFewPlayersException(playersCount);
 	else if (playersCount > 4)
 		throw TooManyPlayersException(playersCount);
 	
+	// create controller and real player.
 	_controller = new KeyboardController1();
 	_realPlayer = new RealPlayer();
 
@@ -29,14 +31,14 @@ MultiplayerScene::MultiplayerScene(U8 playersCount, bool isSameQueue, U8 startLe
 		float minimalSize = xSize < ySize ? xSize : ySize;
 		sf::Vector2f netWindowSize(minimalSize, minimalSize);
 
-		float posX = (mainWindowSize.x + offset + SCR_WIDTH) / 2 - (minimalSize) / 2;
+		float posX = (mainWindowSize.x + offset + SCR_WIDTH - minimalSize) / 2;
 		for (U8 i = 1; i < _windows.size(); i++)
 		{
 			_windows[i] = new Window(netWindowSize);
-			float smallOffset = offset + mainWindowSize.y - minimalSize * netPlayersCount;
+			float smallOffset = mainWindowSize.y - minimalSize * netPlayersCount;
 			smallOffset /= (netPlayersCount + 1);
 			_windows[i]->set_position(sf::Vector2f(posX, offset \ 
-					+ (minimalSize + smallOffset) * (i - 1)));
+					+ smallOffset * i + minimalSize * (i - 1)));
 		}
 	}
 	else

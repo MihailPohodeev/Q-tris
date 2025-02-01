@@ -5,7 +5,7 @@
 	},
 	"Client" : {
 		"Mode" : "Multiplayer",
-		"PlayersCount" : 1,
+		"PlayersCount" : 2,
 		"Queue" : "Same",
 		"StartLevel" : 0
 	}
