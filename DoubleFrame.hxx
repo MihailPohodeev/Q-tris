@@ -1,5 +1,5 @@
-#ifndef _DOUBLE_FRAME_H_
-#define _DOUBLE_FRAME_H_
+#ifndef _DOUBLE_FRAME_HXX_
+#define _DOUBLE_FRAME_HXX_
 
 #include <mutex>
 #include "Matrix.hxx"

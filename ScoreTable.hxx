@@ -1,5 +1,5 @@
-#ifndef _SCORE_TABLE_H_
-#define _SCORE_TABLE_H_
+#ifndef _SCORE_TABLE_HXX_
+#define _SCORE_TABLE_HXX_
 
 #include <SFML/Graphics.hpp>
 #include "setup.hxx"

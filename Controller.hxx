@@ -1,5 +1,5 @@
-#ifndef _CONTROLLER_H_
-#define _CONTROLLER_H_
+#ifndef _CONTROLLER_HXX_
+#define _CONTROLLER_HXX_
 
 class Controller
 {

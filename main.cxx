@@ -33,6 +33,8 @@ Server* server;
 int SCR_WIDTH  = 800;
 int SCR_HEIGHT = 600;
 
+std::string username;
+
 int main(int argc, char** argv)
 {
 	// server initialization.
@@ -63,6 +65,7 @@ int main(int argc, char** argv)
 		ipAddress = config["Server"]["IPAddress"];
 		port = config["Server"]["Port"];
 		playerCount = config["Client"]["PlayersCount"];
+		username = config["Player"]["Username"];
 	}
 	catch (const json::type_error& e)
 	{
@@ -72,11 +75,11 @@ int main(int argc, char** argv)
 	server = new Server(ipAddress, port);
 
 	// window initialization.
-	sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
-	SCR_WIDTH = desktop.width;
-	SCR_HEIGHT = desktop.height;
-	window = new sf::RenderWindow(desktop, "Q-tris", sf::Style::Fullscreen);
-	//window = new sf::RenderWindow(sf::VideoMode(SCR_WIDTH, SCR_HEIGHT), "Q-tris");
+	// sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
+	// SCR_WIDTH = desktop.width;
+	// SCR_HEIGHT = desktop.height;
+	// window = new sf::RenderWindow(desktop, "Q-tris", sf::Style::Fullscreen);
+	window = new sf::RenderWindow(sf::VideoMode(SCR_WIDTH, SCR_HEIGHT), "Q-tris");
 
 	// font initialization.
 	mainFont = new sf::Font;

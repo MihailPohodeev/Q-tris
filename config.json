@@ -1,4 +1,7 @@
 {
+	"Player" : {
+		"Username" : "Balabama"
+	},
 	"Server" : {
 		"IPAddress" : "127.0.0.1",
 		"Port" : 18881

@@ -1,5 +1,5 @@
-#ifndef _MATRIX_H_
-#define _MATRIX_H_
+#ifndef _MATRIX_HXX_
+#define _MATRIX_HXX_
 
 /*
  * 	Matrix for saving information about elements and current figure.

@@ -1,5 +1,5 @@
-#ifndef _MULTIPLAYER_SCENE_
-#define _MULTIPLAYER_SCENE_
+#ifndef _MULTIPLAYER_SCENE_HXX_
+#define _MULTIPLAYER_SCENE_HXX_
 
 #include <vector>
 #include <string>

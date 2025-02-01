@@ -1,5 +1,5 @@
-#ifndef _GAME_FIELD_H_
-#define _GAME_FIELD_H_
+#ifndef _GAME_FIELD_HXX_
+#define _GAME_FIELD_HXX_
 
 #include <SFML/Graphics.hpp>
 #include "setup.hxx"

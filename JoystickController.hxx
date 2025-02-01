@@ -1,5 +1,5 @@
-#ifndef _JOYSTICK_CONTROLLER_H_
-#define _JOYSTICK_CONTROLLER_H_
+#ifndef _JOYSTICK_CONTROLLER_HXX_
+#define _JOYSTICK_CONTROLLER_HXX_
 
 #include <SFML/Graphics.hpp>
 #include "setup.hxx"

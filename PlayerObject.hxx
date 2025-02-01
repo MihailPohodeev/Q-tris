@@ -1,5 +1,5 @@
-#ifndef _PLAYER_OBJECT_H_
-#define _PLAYER_OBJECT_H_
+#ifndef _PLAYER_OBJECT_HXX_
+#define _PLAYER_OBJECT_HXX_
 
 #include "setup.hxx"
 #include "GameField.hxx"

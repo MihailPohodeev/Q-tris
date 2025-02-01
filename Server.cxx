@@ -1,3 +1,4 @@
+#include <string>
 #include <cstring>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -5,6 +6,8 @@
 #include <unistd.h>
 #include "Server.hxx"
 #include "json.hpp"
+
+extern std::string username;
 
 // contructor.
 Server::Server(const std::string& addr, U16 port)
@@ -28,6 +31,20 @@ Server::Server(const std::string& addr, U16 port)
 	if (connect(_socket, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0)
 	{
 		std::cerr << "Server connection error!\n";
+		exit(-1);
+	}
+
+	std::string message = "{\"Command\" : \"Identification\", \"Username\" : \"" \
+			   + username + "\" }";
+	std::cout << message << '\n';
+	ssize_t bytesSent = send(_socket, message.c_str(), message.size(), 0);
+	if (bytesSent < 0)
+	{
+		std::cerr << "Send failed!\n";
+	}
+	else
+	{
+		std::cout << "sended : " << bytesSent << " bytes.\n";
 	}
 }
 

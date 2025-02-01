@@ -1,5 +1,5 @@
-#ifndef _SETUP_H_
-#define _SETUP_H_
+#ifndef _SETUP_HXX_
+#define _SETUP_HXX_
 
 #include <iostream>
 #include <stdint.h>

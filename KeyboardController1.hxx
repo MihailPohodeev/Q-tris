@@ -1,5 +1,5 @@
-#ifndef _KEYBOARD_CONTROLLER_1_H_
-#define _KEYBOARD_CONTROLLER_1_H_
+#ifndef _KEYBOARD_CONTROLLER_1_HXX_
+#define _KEYBOARD_CONTROLLER_1_HXX_
 
 #include "Controller.hxx"
 
