@@ -2,24 +2,36 @@
 #define _SERVER_HXX_
 
 #include <string>
+#include <queue>
 #include "setup.hxx"
 #include "json.hpp"
 
 using json = nlohmann::json;
+
+struct GameParameter
+{
+	U8 playersCount;
+	U8 startLevel;
+	bool isSameQueue;
+};
 
 class Server
 {
 	I32 _socket;
 	std::string _address;
 	U16 _port;
+	std::queue<std::string> _responseQueue;
+
+	// dequeue response.
+	std::string dequeue_response();
 public:
 	// constructor.
 	// get ip-address and port.
 	Server(const std::string&, U16);
 	// create room.
-	std::string create_room(const std::string&);
+	U32 create_room(const GameParameter&);
 	// connect to room.
-	void connect_to_room(const std::string&, const std::string&);
+	bool connect_to_room(U32);
 	// disconnect from server.
 	void disconnect();
 	// loose game.
@@ -29,7 +41,7 @@ public:
 	// receive data from server.
 	std::string receive_data();
 	// destructor.
-	//~Server();
+	~Server();
 };
 
 #endif

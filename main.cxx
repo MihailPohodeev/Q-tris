@@ -24,7 +24,7 @@
 
 using json = nlohmann::json;
 
-extern sf::RenderWindow* window;
+sf::RenderWindow* window;
 sf::Font* mainFont;
 
 Figure** figuresArray;
@@ -103,6 +103,9 @@ int main(int argc, char** argv)
 	figuresArray[5]->set_color(sf::Color(255, 0, 255, 255));
 	figuresArray[6]->set_color(sf::Color(200, 128, 128, 255));
 
+	struct GameParameter gp {2, 1, true};
+	server->create_room(gp);
+	
 	/*
 	KeyboardController1 controller;
 	KeyboardController1 controller1;

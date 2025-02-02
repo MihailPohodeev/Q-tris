@@ -37,7 +37,7 @@ MultiplayerScene::MultiplayerScene(U8 playersCount, bool isSameQueue, U8 startLe
 			_windows[i] = new Window(netWindowSize);
 			float smallOffset = mainWindowSize.y - minimalSize * netPlayersCount;
 			smallOffset /= (netPlayersCount + 1);
-			_windows[i]->set_position(sf::Vector2f(posX, offset \ 
+			_windows[i]->set_position(sf::Vector2f(posX, offset \
 					+ smallOffset * i + minimalSize * (i - 1)));
 		}
 	}
