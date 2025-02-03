@@ -34,6 +34,7 @@ int SCR_WIDTH  = 800;
 int SCR_HEIGHT = 600;
 
 std::string username;
+I32 userID;
 
 int main(int argc, char** argv)
 {
@@ -105,6 +106,7 @@ int main(int argc, char** argv)
 
 	struct GameParameter gp {2, 1, true};
 	server->create_room(gp);
+	server->make_ready();
 	
 	/*
 	KeyboardController1 controller;

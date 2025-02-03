@@ -29,11 +29,15 @@ public:
 	// get ip-address and port.
 	Server(const std::string&, U16);
 	// create room.
-	U32 create_room(const GameParameter&);
+	I32 create_room(const GameParameter&);
 	// connect to room.
-	bool connect_to_room(U32);
+	bool connect_to_room(I32);
 	// disconnect from server.
 	void disconnect();
+	// make me ready.
+	void make_ready();
+	// make me non ready.
+	void make_non_ready();
 	// loose game.
 	void loose_game();
 	// send data to server.

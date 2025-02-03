@@ -8,10 +8,12 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <poll.h>
+
 #include "Server.hxx"
 #include "json.hpp"
 
 extern std::string username;
+extern U32 userID;
 
 int set_non_blocking(int);
 std::vector<std::string> splitJson(const std::string&);
@@ -101,22 +103,54 @@ Server::Server(const std::string& addr, U16 port)
 	send_data(message);
 
 	std::string response = "";
-	do
+	bool repeat = true;
+	while (repeat)
 	{
 		response = dequeue_response();
-	} while(response == "");
-	std::cout << "RESPONSE : " << response << '\n';
+		std::cout << "RESPONSE : " << response << '\n';
+		json responseJSON;
+		try
+		{
+			responseJSON = json::parse(response);
+			if (responseJSON["Command"] != "Acception")
+				continue;
+			if (responseJSON["Status"] != "Successful")
+			{
+				std::cerr << "Unsuccessful server connection! Server refused connection.\n";
+				exit(-1);
+			}
+			userID = responseJSON["UserID"];
+			std::cout << "Server accepted connection. UserID = " << userID << '\n';
+			repeat = false;
+		}
+		catch(const json::parse_error& e)
+		{
+			std::cerr << "Server creation response exception ; Parse error at byte : " << e.byte << " : " << e.what() << '\n';
+		}
+		catch (const json::type_error& e)
+		{
+			std::cerr << "Server creation response : exception ; Type error : " << e.what() << '\n';
+		}
+		catch (const json::out_of_range& e)
+		{
+			std::cerr << "Server creation response : exception ; Out of range error : " << e.what() << '\n';
+		}
+	}
 }
 
+// Server's destructor.
 Server::~Server()
 {
+	// just close socket.
 	close(_socket);
 }
 
-U32 Server::create_room(const GameParameter& params)
+// make request of room creation to server and connect to this room.
+I32 Server::create_room(const GameParameter& params)
 {
 	json j;
 	j["Command"] = "CreateRoom";
+	j["User"]["UserID"] = userID;
 	j["Parameters"]["PlayersCount"] = params.playersCount;
 	j["Parameters"]["StartLevel"] = params.startLevel;
 	j["Parameters"]["QueueType"] = params.isSameQueue ? "Same" : "Different";
@@ -127,12 +161,31 @@ U32 Server::create_room(const GameParameter& params)
 	return 0;
 }
 
-bool Server::connect_to_room(U32 id)
+// connect to an existing room.
+bool Server::connect_to_room(I32 id)
 {
 	json j;
-	j["type"] = "connect-to-room";
+	j["Command"] = "ConnectToRoom";
 	//send_data(j.dump());
 	return false;
+}
+
+// make me ready.
+void Server::make_ready()
+{
+	json j;
+	j["Command"] = "BeReady";
+	j["IsReady"] = "Yes";
+	send_data(j.dump());
+}
+
+// make me non-ready.
+void Server::make_non_ready()
+{
+	json j;
+	j["Command"] = "BeReady";
+	j["IsReady"] = "No";
+	send_data(j.dump());
 }
 
 // send data to server.
@@ -158,15 +211,16 @@ void Server::send_data(const std::string& str)
 // dequeue response.
 std::string Server::dequeue_response()
 {
-	std::string received = receive_data();
-	if (received != "")
+	std::string received = "";
+	do
 	{
-		std::vector<std::string> vec = splitJson(received);
-		for (auto& x : vec)
-			_responseQueue.push(x);
-	}
-	if (_responseQueue.size() == 0)
-		return "";
+		received = receive_data();
+	} while(received == "");
+	
+	std::vector<std::string> vec = splitJson(received);
+	for (auto& x : vec)
+		_responseQueue.push(x);
+	
 	std::string result = _responseQueue.front();
 	_responseQueue.pop();
 	return result;
@@ -177,7 +231,7 @@ std::string Server::receive_data()
 {
 	size_t sizeOfBuffer = 2048;
 	char* buffer = new char[sizeOfBuffer];
-	size_t receivedBytes;
+	int receivedBytes;
 	
 	receivedBytes = recv(_socket, buffer, sizeOfBuffer - 1, 0);
 	
@@ -189,6 +243,8 @@ std::string Server::receive_data()
 			delete buffer;
 			return "";
 		}
+		delete buffer;
+		return "";
 	}
 	else if (receivedBytes == 0)
 	{
@@ -215,6 +271,8 @@ int set_non_blocking(int sock)
 }
 
 // parse JSON.
+// sometimes JSONs come together. For instance, "{"Name":"Ivan"}{"Name":"Vladimir"}"
+// this function just split such JSONs.
 std::vector<std::string> splitJson(const std::string& input) {
     std::vector<std::string> jsonObjects;
     int braceCount = 0;
