@@ -1,2 +1,3 @@
 program
 *.swp
+*.o
