@@ -22,8 +22,6 @@ class Server
 	U16 _port;
 	std::queue<std::string> _responseQueue;
 
-	// dequeue response.
-	std::string dequeue_response();
 public:
 	// constructor.
 	// get ip-address and port.
@@ -44,6 +42,8 @@ public:
 	void send_data(const std::string&);
 	// receive data from server.
 	std::string receive_data();
+	// dequeue response.
+	std::string dequeue_response();
 	// destructor.
 	~Server();
 };

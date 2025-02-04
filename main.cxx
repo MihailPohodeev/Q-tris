@@ -120,7 +120,10 @@ int main(int argc, char** argv)
 				if (server->connect_to_room(roomID))
 					std::cout << "Successful connected to the room.\n";
 				else
+				{
 					std::cout << "Failed to connect to the room.\n";
+					exit(-1);
+				}
 			}
 			catch (const std::invalid_argument& e) 
 			{
@@ -163,8 +166,36 @@ int main(int argc, char** argv)
 
 	//Scene* currentScene = new MainMenu();
 	*/
-
+	
 	MultiplayerScene multiplayerScene(playerCount, true, 0);
+
+	do
+	{
+		std::string response = server->dequeue_response();
+		if (response == "")
+			continue;
+		std::cout << "response of game starting : " << response << '\n';
+		json responseJSON;
+		try
+		{
+			responseJSON = json::parse(response);
+			if (responseJSON["Command"] != "CanStartGame")
+				continue;
+			break;
+		}
+		catch(const json::parse_error& e)
+		{
+			std::cerr << "Room connection response ; Parse error at byte : " << e.byte << " : " << e.what() << '\n';
+		}
+		catch (const json::type_error& e)
+		{
+			std::cerr << "Room connection response ; Type error : " << e.what() << '\n';
+		}
+		catch (const json::out_of_range& e)
+		{
+			std::cerr << "Room connection response ; Out of range error : " << e.what() << '\n';
+		}
+	} while(1);
 
 	while (window->isOpen())
 	{
