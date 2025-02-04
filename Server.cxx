@@ -155,9 +155,35 @@ I32 Server::create_room(const GameParameter& params)
 	j["Parameters"]["StartLevel"] = params.startLevel;
 	j["Parameters"]["QueueType"] = params.isSameQueue ? "Same" : "Different";
 	send_data(j.dump());
-	//std::string responce = receive_data();
-	//j = json::parse(responce);
-	//return j["room-id"];
+	do
+	{
+		std::string response = dequeue_response();
+		json responseJSON;
+		try
+		{
+			responseJSON = json::parse(response);
+			std::string command = responseJSON["Command"];
+			if (command != "RoomCreationResponse")
+				continue;
+			if (responseJSON["Status"] == "Successful")
+				return responseJSON["RoomID"];
+			else
+				return 0;
+		}
+		catch(const json::parse_error& e)
+                {
+                        std::cerr << "Room creation response ; Parse error at byte : " << e.byte << " : " << e.what() << '\n';
+                }
+                catch (const json::type_error& e)
+                {
+                        std::cerr << "Room creation response ; Type error : " << e.what() << '\n';
+                }
+                catch (const json::out_of_range& e)
+                {
+                        std::cerr << "Room creation response ; Out of range error : " << e.what() << '\n';
+                }
+	} while(1);
+
 	return 0;
 }
 
@@ -166,7 +192,36 @@ bool Server::connect_to_room(I32 id)
 {
 	json j;
 	j["Command"] = "ConnectToRoom";
-	//send_data(j.dump());
+	j["Parameters"]["RoomID"] = id;
+	send_data(j.dump());
+	do
+	{
+		std::string response = dequeue_response();
+		json responseJSON;
+		try
+		{
+			responseJSON = json::parse(response);
+			std::string command = responseJSON["Command"];
+			if (command != "RoomConnectionResponse")
+				continue;
+			if (responseJSON["Status"] == "Successful")
+				return true;
+			else
+				return false;
+		}
+		catch(const json::parse_error& e)
+		{
+			std::cerr << "Room connection response ; Parse error at byte : " << e.byte << " : " << e.what() << '\n';
+		}
+		catch (const json::type_error& e)
+		{
+			std::cerr << "Room connection response ; Type error : " << e.what() << '\n';
+		}
+		catch (const json::out_of_range& e)
+		{
+			std::cerr << "Room connection response ; Out of range error : " << e.what() << '\n';
+		}
+	} while(1);
 	return false;
 }
 
@@ -191,10 +246,10 @@ void Server::make_non_ready()
 // send data to server.
 void Server::send_data(const std::string& str)
 {
-	int totalSent = 0;
+	size_t totalSent = 0;
 	while (totalSent < str.size())
 	{
-		int bytesSent = send(_socket, str.c_str(), str.size() + 1, 0);
+		int bytesSent = send(_socket, str.c_str() + totalSent, str.size() - totalSent + 1, 0);
 		if (bytesSent < 0) {
 			if (errno == EAGAIN || errno == EWOULDBLOCK) {
 				std::cout << "Send would block, try again later." << std::endl;
@@ -240,10 +295,10 @@ std::string Server::receive_data()
 		if (errno != EWOULDBLOCK && errno != EAGAIN)
 		{
 			std::cerr << "recv failed: " << strerror(errno) << std::endl;
-			delete buffer;
+			delete [] buffer;
 			return "";
 		}
-		delete buffer;
+		delete [] buffer;
 		return "";
 	}
 	else if (receivedBytes == 0)
@@ -255,11 +310,11 @@ std::string Server::receive_data()
 	buffer[receivedBytes] = 0;
 	if (receivedBytes == 0)
 	{
-		delete buffer;
+		delete [] buffer;
 		return "";
 	}
 	std::string result(buffer);
-	delete buffer;
+	delete [] buffer;
 	return result;
 }
 

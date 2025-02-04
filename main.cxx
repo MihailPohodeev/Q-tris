@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+#include <cstdlib>
+
 #include "json.hpp"
 #include "Figures/Element.hxx"
 #include "Matrix.hxx"
@@ -67,6 +69,9 @@ int main(int argc, char** argv)
 		port = config["Server"]["Port"];
 		playerCount = config["Client"]["PlayersCount"];
 		username = config["Player"]["Username"];
+		if (argc >= 4)
+			username = std::string(argv[3]);
+
 	}
 	catch (const json::type_error& e)
 	{
@@ -105,7 +110,38 @@ int main(int argc, char** argv)
 	figuresArray[6]->set_color(sf::Color(200, 128, 128, 255));
 
 	struct GameParameter gp {2, 1, true};
-	server->create_room(gp);
+	if (argc >= 3)
+	{
+		if (std::string(argv[1]) == "connect-to-room")
+		{
+			try
+			{
+				I32 roomID = std::stoi(std::string(argv[2]));
+				if (server->connect_to_room(roomID))
+					std::cout << "Successful connected to the room.\n";
+				else
+					std::cout << "Failed to connect to the room.\n";
+			}
+			catch (const std::invalid_argument& e) 
+			{
+				std::cerr << "Invalid argument: " << e.what() << std::endl;
+			}
+			catch (const std::out_of_range& e) 
+			{
+				std::cerr << "Out of range: " << e.what() << std::endl;
+			}
+		}
+		else
+		{
+			std::cerr << "Unknown command!!!\n";
+			exit(-1);
+		}
+	}
+	else
+	{
+		I32 roomID = server->create_room(gp);
+		std::cout << "Room_ID : " << roomID << '\n';
+	}
 	server->make_ready();
 	
 	/*
