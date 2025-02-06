@@ -1,6 +1,6 @@
 CXX = g++
 CXXFLAGS = -Wall
-LDFLAGS = -lsfml-graphics -lsfml-window -lsfml-system
+LDFLAGS = -lsfml-graphics -lsfml-window -lsfml-system -lpthread
 SRC = $(wildcard *.cxx) $(wildcard Figures/*.cxx) $(wildcard UI/*.cxx)
 OBJ = $(SRC:.cxx=.o)
 TARGET = program

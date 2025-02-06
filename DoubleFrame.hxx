@@ -12,6 +12,10 @@ class DoubleFrame
 public:
 	//constructor.
 	DoubleFrame();
+	// copy constructor.
+	DoubleFrame(const DoubleFrame&);
+	// operator =.
+	DoubleFrame& operator=(DoubleFrame);
 	// swap buffers for info exchanging.
 	void swap_buffers();
 	// return ready Matrix.

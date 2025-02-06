@@ -14,6 +14,7 @@
 
 extern std::string username;
 extern U32 userID;
+extern bool isReady;
 
 int set_non_blocking(int);
 std::vector<std::string> splitJson(const std::string&);
@@ -225,6 +226,14 @@ bool Server::connect_to_room(I32 id)
 	return false;
 }
 
+// get room's parameters.
+void Server::get_room_parameters()
+{
+	json request;
+	request["Command"] = "GetRoomParameters";
+	send_data(request.dump());
+}
+
 // make me ready.
 void Server::make_ready()
 {
@@ -232,6 +241,7 @@ void Server::make_ready()
 	j["Command"] = "BeReady";
 	j["IsReady"] = "Yes";
 	send_data(j.dump());
+	isReady = true;
 }
 
 // make me non-ready.
@@ -241,6 +251,7 @@ void Server::make_non_ready()
 	j["Command"] = "BeReady";
 	j["IsReady"] = "No";
 	send_data(j.dump());
+	isReady = false;
 }
 
 // send data to server.

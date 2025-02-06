@@ -1,8 +1,14 @@
+#include <SFML/Graphics.hpp>
+
+#include "Server.hxx"
 #include "MultiplayerScene.hxx"
 #include "KeyboardController1.hxx"
 
 extern int SCR_WIDTH;
 extern int SCR_HEIGHT;
+extern bool isReady;
+extern Server* server;
+extern sf::RenderWindow* window;
 
 MultiplayerScene::MultiplayerScene(U8 playersCount, bool isSameQueue, U8 startLevel) : _windows(playersCount)
 {
@@ -15,6 +21,7 @@ MultiplayerScene::MultiplayerScene(U8 playersCount, bool isSameQueue, U8 startLe
 	// create controller and real player.
 	_controller = new KeyboardController1();
 	_realPlayer = new RealPlayer();
+	_realPlayer->set_controller(_controller);
 
 	sf::Vector2f mainWindowSize = sf::Vector2f(SCR_HEIGHT * 0.7, SCR_HEIGHT * 0.7);
 	_windows[0] = new Window(mainWindowSize);
@@ -43,8 +50,60 @@ MultiplayerScene::MultiplayerScene(U8 playersCount, bool isSameQueue, U8 startLe
 	}
 	else
 	{
+		float size = SCR_WIDTH - (mainWindowSize.x + offset);
+		size /= netPlayersCount;
+		size *= 0.9;
+		if (size > mainWindowSize.x)
+			size = mainWindowSize.x;
+		sf::Vector2f netWindowsSize(sf::Vector2f(size, size));
 
+		float smallOffset = SCR_WIDTH - (mainWindowSize.x + offset);
+		smallOffset -= size * netPlayersCount;
+		smallOffset /= netPlayersCount + 1;
+		float posX = mainWindowSize.x + offset;
+		float posY = (SCR_HEIGHT - size) / 2;
+		for (U8 i = 1; i < _windows.size(); i++)
+		{
+			_windows[i] = new Window(netWindowsSize);
+			_windows[i]->set_position(sf::Vector2f(posX + size * (i - 1) + smallOffset * i, posY));
+		}
 	}
+
+	server->get_room_parameters();
+	do
+	{
+		std::string response = server->dequeue_response();
+		if (response == "")
+			continue;
+
+		json responseJSON;
+		try
+		{
+			responseJSON = json::parse(response);
+			std::string command = responseJSON["Command"];
+			if (command != "RoomParameters")
+				continue;
+			std::cout << response << '\n';
+			break;
+
+		}
+		catch(const json::parse_error& e)
+		{
+			std::cerr << "Can't get room's parameters ; Parse error at byte : " << e.byte << " : " << e.what() << '\n';
+			exit(-1);
+		}
+		catch (const json::type_error& e)
+		{
+			std::cerr << "Can't get room's parameters ; Type error : " << e.what() << '\n';
+			exit(-1);
+		}
+		catch (const json::out_of_range& e)
+		{
+			std::cerr << "Can't get room's parameters ; Out of range error : " << e.what() << '\n';
+			exit(-1);
+		}
+	} while(1);
+
 }
 
 MultiplayerScene::~MultiplayerScene()
@@ -55,7 +114,23 @@ MultiplayerScene::~MultiplayerScene()
 
 void MultiplayerScene::update()
 {
-	return;
+	static bool isEnterPressed = false;
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter))
+	{
+		if (!isEnterPressed)
+		{
+			if (isReady)
+				server->make_non_ready();
+			else
+				server->make_ready();
+		}
+		isEnterPressed = true;
+	}
+	else
+		isEnterPressed = false;
+
+	_windows[0]->update();
 }
 
 void MultiplayerScene::render() const
@@ -66,5 +141,8 @@ void MultiplayerScene::render() const
 
 void MultiplayerScene::exchange_data()
 {
-	return;
+	while(window->isOpen())
+	{
+		_realPlayer->exchange_data();
+	}
 }

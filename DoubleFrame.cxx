@@ -31,6 +31,26 @@ void DoubleFrame::set_matrix(const Matrix& mat)
 	_workingMatrix = new Matrix(mat);
 }
 
+// copy constructor.
+DoubleFrame::DoubleFrame(const DoubleFrame& df)
+{
+	_workingMatrix  = df._workingMatrix->clone();
+	_readyMatrix    = df._readyMatrix->clone();
+}
+
+// operator =.
+DoubleFrame& DoubleFrame::operator=(DoubleFrame df)
+{
+	Matrix* temp 	= _workingMatrix;
+	_workingMatrix 	= df._workingMatrix;
+	df._workingMatrix = temp;
+
+	temp = _readyMatrix;
+	_readyMatrix	= df._readyMatrix;
+	df._readyMatrix = temp;
+	return *this;
+}
+
 // destructor.
 DoubleFrame::~DoubleFrame()
 {

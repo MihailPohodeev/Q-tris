@@ -1,6 +1,9 @@
 #include "NetworkPlayer.hxx"
 
-NetworkPlayer::NetworkPlayer() : PlayerObject() {}
+NetworkPlayer::NetworkPlayer() : PlayerObject()
+{
+
+}
 
 void NetworkPlayer::update()
 {

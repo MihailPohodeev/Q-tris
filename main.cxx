@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
+#include <thread>
 
 #include "json.hpp"
 #include "Figures/Element.hxx"
@@ -23,6 +24,7 @@
 #include "Scene.hxx"
 #include "UI/MainMenu.hxx"
 #include "MultiplayerScene.hxx"
+#include "functions.hxx"
 
 using json = nlohmann::json;
 
@@ -31,17 +33,19 @@ sf::Font* mainFont;
 
 Figure** figuresArray;
 Server* server;
+Scene* currentScene;
 
 int SCR_WIDTH  = 800;
-int SCR_HEIGHT = 600;
+int SCR_HEIGHT = 450;
 
 std::string username;
 I32 userID;
+bool isReady = false;
 
 int main(int argc, char** argv)
 {
-	// server initialization.
-	
+	srand(time(0));
+	// server initialization.	
 	std::ifstream configStream("config.json");
 	if (!configStream.is_open()) {
 		std::cerr << "Could not open the config file!" << std::endl;
@@ -165,9 +169,9 @@ int main(int argc, char** argv)
 	netWin.set_position(sf::Vector2f(400.f, 100.f));
 
 	//Scene* currentScene = new MainMenu();
-	*/
 	
 	MultiplayerScene multiplayerScene(playerCount, true, 0);
+	*/
 
 	do
 	{
@@ -197,6 +201,11 @@ int main(int argc, char** argv)
 		}
 	} while(1);
 
+	MultiplayerScene multiplayerScene(playerCount, true, 0);
+	currentScene = &multiplayerScene;
+	
+	std::cout << "start game : \n";
+	std::thread dataTransferThread(&MultiplayerScene::exchange_data, &multiplayerScene);
 	while (window->isOpen())
 	{
 		sf::Event event;
@@ -215,13 +224,14 @@ int main(int argc, char** argv)
 		multiplayerScene.render();
 		window->display();
 	}
+	dataTransferThread.join();
 
 	for (U8 i = 0; i < 7; i++)
 		delete figuresArray[i];
 	//delete currentScene;
-	delete figuresArray;
+	delete [] figuresArray;
 	delete mainFont;
 	delete server;
-	//delete window;
+	delete window;
 	return 0;
 }

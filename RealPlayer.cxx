@@ -1,6 +1,11 @@
 #include "RealPlayer.hxx"
+#include "Server.hxx"
+#include "json.hpp"
+
+using json = nlohmann::json;
 
 extern Figure** figuresArray;
+extern Server* server;
 
 // contructor.
 RealPlayer::RealPlayer() : PlayerObject()
@@ -46,6 +51,11 @@ void RealPlayer::update()
 	struct ElementData figureElements[4];
 	_currentFigure->get_all_elements(figureElements);
 
+	if (!_controller)
+	{
+		std::cerr << "Controller in RealPlayer is null :(\n";
+		exit(-1);
+	}
 	// accelerate the figure - if player press button 'accelerate'.
 	_speed = (_controller->is_accelerate()) ? 100'000 / (_level + 1) : 1'000'000 / (_level + 1);
 
@@ -309,7 +319,7 @@ void RealPlayer::update()
 			_currentFigure->move(offset);
 		}
 	}
-
+	
 	Matrix resultMatrix = _matrixForWork;
 	resultMatrix.add_figure(*_currentFigure);
 	_doubleFrame->set_matrix(resultMatrix);
@@ -319,5 +329,29 @@ void RealPlayer::update()
 // share my data with other players.
 void RealPlayer::exchange_data()
 {
-	;// TODO
+	json package;
+	package["Command"] = "GameFrame";
+	package["Data"] = json::array();
+
+	Matrix mat = _doubleFrame->get_matrix();
+
+	struct ElementData*** buf = mat.get_buffer();
+	for(U8 i = 0; i < 10; i++)
+	{
+		for(U8 j = 0; j < 20; j++)
+		{
+			json elemJSON;
+			if (buf[i][j])
+			{
+				elemJSON["Color"]["R"] = buf[i][j]->color.r;
+				elemJSON["Color"]["G"] = buf[i][j]->color.g;
+				elemJSON["Color"]["B"] = buf[i][j]->color.b;
+
+				elemJSON["Position"]["X"] = buf[i][j]->position.x;
+				elemJSON["Position"]["Y"] = buf[i][j]->position.y;
+				package["Data"].push_back(elemJSON);
+                        }
+                }
+        }
+	server->send_data(package.dump());
 }

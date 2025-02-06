@@ -15,18 +15,27 @@ void Window::set_player_object(PlayerObject* player)
 void Window::set_position(const sf::Vector2f& pos)
 {
 	_gameField.set_position(pos);
-	_scoreTable.set_position(sf::Vector2f(pos.x + _size.x / 2.f + 5.f, pos.y));
+	_scoreTable.set_position(sf::Vector2f(pos.x + _size.x / 2.f + _size.x * 0.01f, pos.y));
 }
 
 void Window::update()
 {
+	if (!_player)
+	{
+		std::cerr << "Player object in Window is null :(\n";
+		exit(-1);
+	}
 	_player->update();
+	//std::cout << "player updated!\n";
 	_scoreTable.set_score(_player->get_score());
 	_scoreTable.set_lines(_player->get_lines());
 	_scoreTable.set_level(_player->get_level());
+	//std::cout << "score table updated!\n";
 	_gameField.set_matrix(_doubleFrame.get_matrix());
-	Matrix mat = _doubleFrame.get_matrix();
-	struct ElementData*** buff = mat.get_buffer();
+	//std::cout << "gameField matrix - got";
+	
+	//Matrix mat = _doubleFrame.get_matrix();
+	//struct ElementData*** buff = mat.get_buffer();
 }
 
 void Window::render() const

@@ -32,6 +32,8 @@ public:
 	bool connect_to_room(I32);
 	// disconnect from server.
 	void disconnect();
+	// get room's parameters.
+	void get_room_parameters();
 	// make me ready.
 	void make_ready();
 	// make me non ready.
