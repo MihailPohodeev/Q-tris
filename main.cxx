@@ -189,15 +189,15 @@ int main(int argc, char** argv)
 		}
 		catch(const json::parse_error& e)
 		{
-			std::cerr << "Room connection response ; Parse error at byte : " << e.byte << " : " << e.what() << '\n';
+			std::cerr << "Game Start response exception ; Parse error at byte : " << e.byte << " : " << e.what() << " ; String : " << response << '\n';
 		}
 		catch (const json::type_error& e)
 		{
-			std::cerr << "Room connection response ; Type error : " << e.what() << '\n';
+			std::cerr << "Game Start response exception ; Type error : " << e.what() << " ; String : " << response << '\n';
 		}
 		catch (const json::out_of_range& e)
 		{
-			std::cerr << "Room connection response ; Out of range error : " << e.what() << '\n';
+			std::cerr << "Game Start response exception ; Out of range error : " << e.what() << " ; String : " << response << '\n';
 		}
 	} while(1);
 

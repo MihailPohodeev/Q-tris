@@ -108,7 +108,8 @@ Server::Server(const std::string& addr, U16 port)
 	while (repeat)
 	{
 		response = dequeue_response();
-		std::cout << "RESPONSE : " << response << '\n';
+		if (response == "")
+			continue;
 		json responseJSON;
 		try
 		{
@@ -126,15 +127,15 @@ Server::Server(const std::string& addr, U16 port)
 		}
 		catch(const json::parse_error& e)
 		{
-			std::cerr << "Server creation response exception ; Parse error at byte : " << e.byte << " : " << e.what() << '\n';
+			std::cerr << "Server creation response exception ; Parse error at byte : " << e.byte << " : " << e.what() << " ; String : " << response << '\n';
 		}
 		catch (const json::type_error& e)
 		{
-			std::cerr << "Server creation response : exception ; Type error : " << e.what() << '\n';
+			std::cerr << "Server creation response : exception ; Type error : " << e.what() << " ; String : " << response <<'\n';
 		}
 		catch (const json::out_of_range& e)
 		{
-			std::cerr << "Server creation response : exception ; Out of range error : " << e.what() << '\n';
+			std::cerr << "Server creation response : exception ; Out of range error : " << e.what() << " ; String : " << response << '\n';
 		}
 	}
 }
@@ -159,6 +160,8 @@ I32 Server::create_room(const GameParameter& params)
 	do
 	{
 		std::string response = dequeue_response();
+		if (response == "")
+			continue;
 		json responseJSON;
 		try
 		{
@@ -173,15 +176,15 @@ I32 Server::create_room(const GameParameter& params)
 		}
 		catch(const json::parse_error& e)
                 {
-                        std::cerr << "Room creation response ; Parse error at byte : " << e.byte << " : " << e.what() << '\n';
+                        std::cerr << "Room creation response ; Parse error at byte : " << e.byte << " : " << e.what() << "; String : " << response << '\n';
                 }
                 catch (const json::type_error& e)
                 {
-                        std::cerr << "Room creation response ; Type error : " << e.what() << '\n';
+                        std::cerr << "Room creation response ; Type error : " << e.what() << " ; String : " << response << '\n';
                 }
                 catch (const json::out_of_range& e)
                 {
-                        std::cerr << "Room creation response ; Out of range error : " << e.what() << '\n';
+                        std::cerr << "Room creation response ; Out of range error : " << e.what() << " ; String : " << response << '\n';
                 }
 	} while(1);
 
@@ -198,6 +201,8 @@ bool Server::connect_to_room(I32 id)
 	do
 	{
 		std::string response = dequeue_response();
+		if (response == "")
+			continue;
 		json responseJSON;
 		try
 		{
@@ -264,13 +269,14 @@ void Server::send_data(const std::string& str)
 		if (bytesSent < 0) {
 			if (errno == EAGAIN || errno == EWOULDBLOCK) {
 				std::cout << "Send would block, try again later." << std::endl;
-			} else {
+			}
+			else {
 				std::cerr << "Error sending data: " << strerror(errno) << std::endl;
 			}
-		} else {
-			totalSent += bytesSent;
-			std::cout << "Sent " << bytesSent<<" bytes: " << str << std::endl;
+			break;
 		}
+		else
+			totalSent += bytesSent;
 	}
 }
 
@@ -278,14 +284,17 @@ void Server::send_data(const std::string& str)
 std::string Server::dequeue_response()
 {
 	std::string received = "";
-	do
+	received = receive_data();
+
+	if (received != "")
 	{
-		received = receive_data();
-	} while(received == "");
-	
-	std::vector<std::string> vec = splitJson(received);
-	for (auto& x : vec)
-		_responseQueue.push(x);
+		std::vector<std::string> vec = splitJson(received);
+		for (auto& x : vec)
+			_responseQueue.push(x);
+	}
+
+	if (_responseQueue.size() == 0)
+		return "";
 	
 	std::string result = _responseQueue.front();
 	_responseQueue.pop();

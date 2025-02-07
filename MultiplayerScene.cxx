@@ -3,6 +3,7 @@
 #include "Server.hxx"
 #include "MultiplayerScene.hxx"
 #include "KeyboardController1.hxx"
+#include "NetworkPlayer.hxx"
 
 extern int SCR_WIDTH;
 extern int SCR_HEIGHT;
@@ -42,6 +43,10 @@ MultiplayerScene::MultiplayerScene(U8 playersCount, bool isSameQueue, U8 startLe
 		for (U8 i = 1; i < _windows.size(); i++)
 		{
 			_windows[i] = new Window(netWindowSize);
+			NetworkPlayer* netPlayer = new NetworkPlayer(0);
+			_netPlayers.push_back(netPlayer);
+			_windows[i]->set_player_object(netPlayer);
+
 			float smallOffset = mainWindowSize.y - minimalSize * netPlayersCount;
 			smallOffset /= (netPlayersCount + 1);
 			_windows[i]->set_position(sf::Vector2f(posX, offset \
@@ -110,6 +115,16 @@ MultiplayerScene::~MultiplayerScene()
 {
 	delete _realPlayer;
 	delete _controller;
+	for (auto it = _netPlayers.begin(); it != _netPlayers.end(); ++it)
+	{
+		if (*it)
+			delete *it;
+	}
+	for (auto it = _windows.begin(); it != _windows.end(); ++it)
+	{
+		if (*it)
+			delete *it;
+	}
 }
 
 void MultiplayerScene::update()
@@ -144,5 +159,15 @@ void MultiplayerScene::exchange_data()
 	while(window->isOpen())
 	{
 		_realPlayer->exchange_data();
+
+		std::string dataFrame = server->dequeue_response();
+		if (dataFrame != "")
+			std::cout << "Data : " << dataFrame << '\n';
+		
+		for (auto it = _netPlayers.begin(); it != _netPlayers.end(); ++it)
+		{
+			if (*it)
+				(*it)->exchange_data();
+		}
 	}
 }
