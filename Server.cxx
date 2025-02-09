@@ -287,9 +287,10 @@ std::string Server::dequeue_response()
 
 	if (received != "")
 	{
-		std::vector<std::string> vec = splitJson(received);
-		for (auto& x : vec)
-			_responseQueue.push(x);
+		//std::vector<std::string> vec = splitJson(received);
+		//for (auto& x : vec)
+		//	_responseQueue.push(x);
+		_responseQueue.push(received);
 	}
 
 	if (_responseQueue.size() == 0)
@@ -303,7 +304,7 @@ std::string Server::dequeue_response()
 // receive data from server.
 std::string Server::receive_data()
 {
-	size_t sizeOfBuffer = 2048;
+	size_t sizeOfBuffer = 16384;
 	char* buffer = new char[sizeOfBuffer];
 	int receivedBytes;
 	

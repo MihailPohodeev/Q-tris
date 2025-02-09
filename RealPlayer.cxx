@@ -329,7 +329,7 @@ void RealPlayer::update()
 // share my data with other players.
 void RealPlayer::exchange_data()
 {
-	if (_clockForDataSending.getElapsedTime().asMicroseconds() > _speed)
+	if (_clockForDataSending.getElapsedTime().asMicroseconds() > 100'000.0)
 	{
 		json package;
 		package["Command"] = "GameFrame";
