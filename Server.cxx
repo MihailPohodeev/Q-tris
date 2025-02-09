@@ -260,7 +260,7 @@ void Server::make_non_ready()
 }
 
 // send data to server.
-void Server::send_data(const std::string& str)
+bool Server::send_data(const std::string& str)
 {
 	size_t totalSent = 0;
 	while (totalSent < str.size())
@@ -273,18 +273,17 @@ void Server::send_data(const std::string& str)
 			else {
 				std::cerr << "Error sending data: " << strerror(errno) << std::endl;
 			}
-			break;
+			return false;
 		}
-		else
-			totalSent += bytesSent;
+		totalSent += bytesSent;
 	}
+	return true;
 }
 
 // dequeue response.
 std::string Server::dequeue_response()
 {
-	std::string received = "";
-	received = receive_data();
+	std::string received = receive_data();
 
 	if (received != "")
 	{
@@ -324,6 +323,7 @@ std::string Server::receive_data()
 	else if (receivedBytes == 0)
 	{
 		std::cerr << "Server is unavailable.\n";
+		delete [] buffer;
 		exit(-1);
 	}
 	

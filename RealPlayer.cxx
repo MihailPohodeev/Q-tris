@@ -329,29 +329,33 @@ void RealPlayer::update()
 // share my data with other players.
 void RealPlayer::exchange_data()
 {
-	json package;
-	package["Command"] = "GameFrame";
-	package["Data"] = json::array();
-
-	Matrix mat = _doubleFrame->get_matrix();
-
-	struct ElementData*** buf = mat.get_buffer();
-	for(U8 i = 0; i < 10; i++)
+	if (_clockForDataSending.getElapsedTime().asMicroseconds() > _speed)
 	{
-		for(U8 j = 0; j < 20; j++)
+		json package;
+		package["Command"] = "GameFrame";
+		package["Data"] = json::array();
+	
+		Matrix mat = _doubleFrame->get_matrix();
+	
+		struct ElementData*** buf = mat.get_buffer();
+		for(U8 i = 0; i < 10; i++)
 		{
-			json elemJSON;
-			if (buf[i][j])
+			for(U8 j = 0; j < 20; j++)
 			{
-				elemJSON["Color"]["R"] = buf[i][j]->color.r;
-				elemJSON["Color"]["G"] = buf[i][j]->color.g;
-				elemJSON["Color"]["B"] = buf[i][j]->color.b;
-
-				elemJSON["Position"]["X"] = buf[i][j]->position.x;
-				elemJSON["Position"]["Y"] = buf[i][j]->position.y;
-				package["Data"].push_back(elemJSON);
-                        }
-                }
-        }
-	server->send_data(package.dump());
+				json elemJSON;
+				if (buf[i][j])
+				{
+					elemJSON["Color"]["R"] = buf[i][j]->color.r;
+					elemJSON["Color"]["G"] = buf[i][j]->color.g;
+					elemJSON["Color"]["B"] = buf[i][j]->color.b;
+	
+					elemJSON["Position"]["X"] = buf[i][j]->position.x;
+					elemJSON["Position"]["Y"] = buf[i][j]->position.y;
+					package["Data"].push_back(elemJSON);
+	                        }
+	                }
+	        }
+		server->send_data(package.dump());
+		_clockForDataSending.restart();
+	}
 }

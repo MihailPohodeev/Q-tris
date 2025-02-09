@@ -41,7 +41,7 @@ public:
 	// loose game.
 	void loose_game();
 	// send data to server.
-	void send_data(const std::string&);
+	bool send_data(const std::string&);
 	// receive data from server.
 	std::string receive_data();
 	// dequeue response.

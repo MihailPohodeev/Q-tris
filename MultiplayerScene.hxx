@@ -2,6 +2,7 @@
 #define _MULTIPLAYER_SCENE_HXX_
 
 #include <vector>
+#include <list>
 #include <string>
 #include <exception>
 

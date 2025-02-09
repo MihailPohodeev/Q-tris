@@ -12,6 +12,8 @@ class RealPlayer : public PlayerObject
 	float _speed;
 	// clock for managing speed of game.
 	sf::Clock _clock;
+	// clock for exchanging data with Server.
+	sf::Clock _clockForDataSending;
 	// controller for managing.
 	Controller* _controller;
 	// queue for getting the same figures by clients.
@@ -28,6 +30,8 @@ class RealPlayer : public PlayerObject
 public:
 	// constructor.
 	RealPlayer();
+	// destructor.
+	virtual ~RealPlayer() {}
 	// set controller.
 	void set_controller(Controller*);
 	// update data.
