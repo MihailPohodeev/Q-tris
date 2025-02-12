@@ -86,10 +86,10 @@ int main(int argc, char** argv)
 	server = new Server(ipAddress, port);
 
 	// window initialization.
-	// sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
-	// SCR_WIDTH = desktop.width;
-	// SCR_HEIGHT = desktop.height;
-	// window = new sf::RenderWindow(desktop, "Q-tris", sf::Style::Fullscreen);
+	//sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
+	//SCR_WIDTH = desktop.width;
+	//SCR_HEIGHT = desktop.height;
+	//window = new sf::RenderWindow(desktop, "Q-tris", sf::Style::Fullscreen);
 	window = new sf::RenderWindow(sf::VideoMode(SCR_WIDTH, SCR_HEIGHT), "Q-tris");
 
 	// font initialization.

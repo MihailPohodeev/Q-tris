@@ -15,6 +15,10 @@ class Window
 	ScoreTable _scoreTable;
 	DoubleFrame _doubleFrame;
 
+	// notification of game over.
+	sf::RectangleShape _notification;
+	sf::Text _gameOverHeader;
+
 	sf::Vector2f _size;
 public:
 	// constructor.

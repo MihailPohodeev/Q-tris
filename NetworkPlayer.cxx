@@ -17,6 +17,8 @@ void NetworkPlayer::update()
 void NetworkPlayer::exchange_data()
 {
 	json dataFrameJSON;
+	if (_dataFrameString == "")
+		return;
 	try
 	{
 		dataFrameJSON = json::parse(_dataFrameString);

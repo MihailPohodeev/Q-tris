@@ -10,6 +10,10 @@
 class RealPlayer : public PlayerObject
 {
 	float _speed;
+	// current state for level increment.
+	U16 _currentLevelIncrementState;
+	// count of lines, that nesessary for level update
+	U16 _incrementForLevel;
 	// clock for managing speed of game.
 	sf::Clock _clock;
 	// clock for exchanging data with Server.

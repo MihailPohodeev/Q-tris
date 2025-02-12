@@ -8,7 +8,7 @@ extern Figure** figuresArray;
 extern Server* server;
 
 // contructor.
-RealPlayer::RealPlayer() : PlayerObject()
+RealPlayer::RealPlayer() : PlayerObject(), _incrementForLevel(10), _currentLevelIncrementState(0)
 {
 	_get_new_figures_to_queue();
 	_currentFigure = nullptr;
@@ -105,6 +105,14 @@ void RealPlayer::update()
 				_score += 1200 * (_level + 1);
 		}
 		
+		_currentLevelIncrementState += countOfDestroyableLines;
+		if (_currentLevelIncrementState >= _incrementForLevel)
+		{
+			_level += 1;
+			_currentLevelIncrementState -= _incrementForLevel;
+			_incrementForLevel *= 1.2f;
+		}
+		
 		// paste figure into matrix, if it touch the top of cup.
 		for (U8 i = 0; i < 4; i++)
 		{
@@ -113,6 +121,12 @@ void RealPlayer::update()
 			{
 				if (currentElem->position.y >= 19 || buffer[currentElem->position.x][currentElem->position.y + 1])
 				{
+					for (U8 i = 0; i < 4; i++)
+					{
+						struct ElementData* curElem = &figureElements[i];
+						if (curElem->position.y <= 2)
+							_isGameOver = true;
+					}
 					_matrixForWork.add_figure(*_currentFigure);
 					_update_the_figure();
 					break;
