@@ -304,7 +304,7 @@ std::string Server::dequeue_response()
 // receive data from server.
 std::string Server::receive_data()
 {
-	size_t sizeOfBuffer = 16384;
+	size_t sizeOfBuffer = 32000;
 	char* buffer = new char[sizeOfBuffer];
 	int receivedBytes;
 	
@@ -336,6 +336,7 @@ std::string Server::receive_data()
 	}
 	std::string result(buffer);
 	delete [] buffer;
+	std::cout << "Received : " << result << '\n';
 	return result;
 }
 

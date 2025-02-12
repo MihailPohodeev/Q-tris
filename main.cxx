@@ -61,17 +61,17 @@ int main(int argc, char** argv)
 	catch (const json::parse_error& e)
 	{
 		std::cerr << "Parse error : " << e.what() << '\n';
-		return 1;
+		exit(-1);
 	}
 
 	std::string ipAddress;
 	U16 port;
-	U8 playerCount = 0;
+	U8 playersCount = 0;
 	try
 	{
 		ipAddress = config["Server"]["IPAddress"];
 		port = config["Server"]["Port"];
-		playerCount = config["Client"]["PlayersCount"];
+		playersCount = config["Client"]["PlayersCount"];
 		username = config["Player"]["Username"];
 		if (argc >= 4)
 			username = std::string(argv[3]);
@@ -80,6 +80,7 @@ int main(int argc, char** argv)
 	catch (const json::type_error& e)
 	{
 		std::cerr << "Errors in config.json file : " << e.what() << '\n';
+		exit(-1);
 	}
 
 	server = new Server(ipAddress, port);
@@ -113,7 +114,7 @@ int main(int argc, char** argv)
 	figuresArray[5]->set_color(sf::Color(255, 0, 255, 255));
 	figuresArray[6]->set_color(sf::Color(200, 128, 128, 255));
 
-	struct GameParameter gp {2, 1, true};
+	struct GameParameter gp {playersCount, 1, true};
 	if (argc >= 3)
 	{
 		if (std::string(argv[1]) == "connect-to-room")
@@ -201,7 +202,7 @@ int main(int argc, char** argv)
 		}
 	} while(1);
 
-	MultiplayerScene multiplayerScene(playerCount, true, 0);
+	MultiplayerScene multiplayerScene(playersCount, true, 0);
 	currentScene = &multiplayerScene;
 	
 	std::cout << "start game : \n";

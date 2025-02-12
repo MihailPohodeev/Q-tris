@@ -20,8 +20,12 @@ void NetworkPlayer::exchange_data()
 	try
 	{
 		dataFrameJSON = json::parse(_dataFrameString);
+		_score = dataFrameJSON["Score"];
+		_level = dataFrameJSON["Level"];
+		_lines = dataFrameJSON["Lines"];
 		Matrix resultMatrix;
-		for (const auto& elem : dataFrameJSON)
+		json dataArray = dataFrameJSON["Data"];
+		for (const auto& elem : dataArray)
 		{
 			struct ElementData tempElem;
 			json color = elem["Color"];

@@ -1,6 +1,8 @@
 #ifndef _WINDOW_HXX_
 #define _WINDOW_HXX_
 
+#include <string>
+
 #include "PlayerObject.hxx"
 #include "GameField.hxx"
 #include "ScoreTable.hxx"
@@ -26,6 +28,8 @@ public:
 	void update();
 	// render.
 	void render() const;
+	// set username.
+	void set_username(const std::string&);
 };
 
 #endif

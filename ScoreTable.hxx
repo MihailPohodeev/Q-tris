@@ -2,11 +2,14 @@
 #define _SCORE_TABLE_HXX_
 
 #include <SFML/Graphics.hpp>
+#include <string>
+
 #include "setup.hxx"
 
 class ScoreTable
 {
 	sf::RectangleShape _shape;
+	sf::Text _usernameHeader;
 	sf::Text _scoreHeader;
 	sf::Text _linesHeader;
 	sf::Text _levelHeader;
@@ -24,6 +27,8 @@ public:
 	void set_position(const sf::Vector2f&);
 	// get current position.
 	sf::Vector2f get_position() const;
+	// set username.
+	void set_username(const std::string&);
 	// set and get Score.
 	void set_score(U64);
 	U64 get_score() const;

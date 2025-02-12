@@ -12,13 +12,17 @@ ScoreTable::ScoreTable(const sf::Vector2f& size) : _shape(size)
 	_lines = 0;
 	_level = 0;
 	
+	_usernameHeader.setFont(*mainFont);
 	_scoreHeader.setFont(*mainFont);
 	_linesHeader.setFont(*mainFont);
 	_levelHeader.setFont(*mainFont);
 
+	_usernameHeader.setString("Without Name");
 	_scoreHeader.setString("SCORE : 0");
 	_linesHeader.setString("LINES : 0");
 	_levelHeader.setString("LEVEL : 0");
+
+	_usernameHeader.setFillColor(sf::Color::Red);
 
 	set_size(size);
 	set_position(sf::Vector2f(0.0f, 0.0f));
@@ -29,6 +33,7 @@ void ScoreTable::set_size(const sf::Vector2f& size)
 {
 	_shape.setSize(size);
 	U16 characterSize = static_cast<int>((size.x + size.y) / 25.f);
+	_usernameHeader.setCharacterSize(characterSize);
         _scoreHeader.setCharacterSize(characterSize);
         _linesHeader.setCharacterSize(characterSize);
         _levelHeader.setCharacterSize(characterSize);
@@ -45,6 +50,7 @@ void ScoreTable::set_position(const sf::Vector2f& pos)
 {
 	_shape.setPosition(pos);
 	sf::Vector2f size = _shape.getSize();
+	_usernameHeader.setPosition(sf::Vector2f(pos.x + size.x * 0.1f, pos.y + size.y * 0.075));
 	_scoreHeader.setPosition(sf::Vector2f(pos.x + size.x * 0.1f, pos.y + size.y * 0.15f));
 	_linesHeader.setPosition(sf::Vector2f(pos.x + size.x * 0.1f, pos.y + size.y * 0.225f));
 	_levelHeader.setPosition(sf::Vector2f(pos.x + size.x * 0.1f, pos.y + size.y * 0.30f));
@@ -54,6 +60,12 @@ void ScoreTable::set_position(const sf::Vector2f& pos)
 sf::Vector2f ScoreTable::get_position() const
 {
 	return _shape.getPosition();
+}
+
+// set username.
+void ScoreTable::set_username(const std::string& str)
+{
+	_usernameHeader.setString(str);
 }
 
 // set and get score.
@@ -102,6 +114,7 @@ U32 ScoreTable::get_level() const
 void ScoreTable::render() const
 {
 	window->draw(_shape);
+	window->draw(_usernameHeader);
 	window->draw(_scoreHeader);
 	window->draw(_linesHeader);
 	window->draw(_levelHeader);

@@ -43,3 +43,9 @@ void Window::render() const
 	_gameField.render();
 	_scoreTable.render();
 }
+
+// set username.
+void Window::set_username(const std::string& str)
+{
+	_scoreTable.set_username(str);
+}

@@ -11,6 +11,7 @@ extern bool isReady;
 extern I32 userID;
 extern Server* server;
 extern sf::RenderWindow* window;
+extern std::string username;
 
 MultiplayerScene::MultiplayerScene(U8 playersCount, bool isSameQueue, U8 startLevel) : _windows(playersCount)
 {
@@ -30,6 +31,7 @@ MultiplayerScene::MultiplayerScene(U8 playersCount, bool isSameQueue, U8 startLe
 	int offset = (SCR_HEIGHT - mainWindowSize.x) * 0.5;
 	_windows[0]->set_player_object(_realPlayer);
 	_windows[0]->set_position(sf::Vector2f(offset * 0.5, offset));
+	_windows[0]->set_username(username);
 
 	U8 netPlayersCount = playersCount - 1;
 	if (SCR_WIDTH / (float)SCR_HEIGHT < 1.5f)
@@ -91,12 +93,16 @@ MultiplayerScene::MultiplayerScene(U8 playersCount, bool isSameQueue, U8 startLe
 			std::string command = responseJSON["Command"];
 			if (command != "RoomParameters")
 				continue;
+			std::cout << response << '\n';
 			json users = responseJSON["Users"];
 			auto iter = _netPlayers.begin();
+			auto winIter = ++_windows.begin();
 			for(const auto& user : users)
 			{
 				(*iter)->set_ID(user["ID"]);
 				(*iter)->set_username(user["Username"]);
+				(*winIter)->set_username(user["Username"]);
+				++winIter;
 				++iter;
 			}
 			break;
@@ -198,7 +204,7 @@ void MultiplayerScene::exchange_data()
 						}
 						else
 						{
-							(*user)->set_data_frame_string(frame["Data"].dump());
+							(*user)->set_data_frame_string(frame.dump());
 						}
 					}
 				}

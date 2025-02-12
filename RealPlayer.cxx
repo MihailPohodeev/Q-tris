@@ -333,6 +333,9 @@ void RealPlayer::exchange_data()
 	{
 		json package;
 		package["Command"] = "GameFrame";
+		package["Score"] = _score;
+		package["Level"] = _level;
+		package["Lines"] = _lines;
 		package["Data"] = json::array();
 	
 		Matrix mat = _doubleFrame->get_matrix();
