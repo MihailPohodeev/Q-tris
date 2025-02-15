@@ -221,6 +221,9 @@ void MultiplayerScene::exchange_data()
 			{
 				std::cerr << "Network Frames handling error ; Out of range error : " << e.what() << " ; String : " << dataFrame << '\n';
 			}
+			catch (const std::exception& e) {
+				std::cerr << "Network Frames handling error ; " << e.what() << "\n; String : " << dataFrame << '\n';
+			}
 
 			for (auto it = _netPlayers.begin(); it != _netPlayers.end(); ++it)
 			{
