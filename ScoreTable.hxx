@@ -9,7 +9,9 @@
 class ScoreTable
 {
 	sf::RectangleShape _shape;
+	sf::RectangleShape _nextFigureShape;
 	sf::Text _usernameHeader;
+	sf::Text _nextFigureHeader;
 	sf::Text _scoreHeader;
 	sf::Text _linesHeader;
 	sf::Text _levelHeader;

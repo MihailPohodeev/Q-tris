@@ -293,21 +293,16 @@ std::string Server::dequeue_response()
 	{
 		size_t receivedBytes = receive_data();
 
-		if (receivedBytes != 0)
+		if (receivedBytes > 0)
 		{
 			auto begin = _buffer;
-			auto end   = _buffer + receivedBytes - 1;
+			auto end   = _buffer + receivedBytes;
 			do
 			{
 				auto it = std::find_if(begin, end, [](char x) { return x == '\0';});
-				if (lastWord != "")
-				{
-					lastWord += std::string(begin);
-					_responseQueue.push(lastWord);
-					lastWord = "";
-				}
 				if (it == end)
 				{
+					*end = 0;
 					try
 					{
 						std::string result(begin);
@@ -316,12 +311,37 @@ std::string Server::dequeue_response()
 					}
 					catch (const json::parse_error& e)
 					{
-						lastWord = std::string(begin);
+						if (lastWord != "")
+							lastWord += std::string(begin);
+						else
+							lastWord = std::string(begin);
 					}
 					break;
 				}
 				else
 				{
+					if (lastWord != "")
+					{
+						if (lastWord.size() > 16'000)
+						{
+							lastWord = "";
+							begin = it + 1;
+							continue;
+						}
+						lastWord += std::string(begin);
+						try
+						{
+							json::parse(lastWord);
+							_responseQueue.push(lastWord);
+							lastWord = "";
+						}
+						catch(const json::parse_error& e)
+						{
+							std::cerr << "Can't parse last word : " << e.what() << '\n';
+						}
+						begin = it + 1;
+						continue;
+					}
 					_responseQueue.push(std::string(begin));
 					begin = it + 1;
 				}
@@ -356,6 +376,14 @@ size_t Server::receive_data()
 		std::cerr << "Server is unavailable.\n";
 		exit(-1);
 	}
+
+	std::cout << "Received :\n";
+	for (U32 i = 0; i < receivedBytes; i++)
+	{
+		std::cout << (_buffer[i] == 0 ? 'z' : _buffer[i]);
+	}
+	std::cout << '\n';
+
 	return receivedBytes;
 }
 

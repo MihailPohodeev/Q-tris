@@ -22,18 +22,18 @@ void NetworkPlayer::exchange_data()
 	try
 	{
 		dataFrameJSON = json::parse(_dataFrameString);
-		_score = dataFrameJSON["Score"];
-		_level = dataFrameJSON["Level"];
-		_lines = dataFrameJSON["Lines"];
+		_score = dataFrameJSON.at("Score");
+		_level = dataFrameJSON.at("Level");
+		_lines = dataFrameJSON.at("Lines");
 		Matrix resultMatrix;
-		json dataArray = dataFrameJSON["Data"];
+		json dataArray = dataFrameJSON.at("Data");
 		for (const auto& elem : dataArray)
 		{
 			struct ElementData tempElem;
-			json color = elem["Color"];
-			tempElem.color = sf::Color(color["R"], color["G"], color["B"]);
-			json pos = elem["Position"];
-			tempElem.position = sf::Vector2i(pos["X"], pos["Y"]);
+			json color = elem.at("Col");
+			tempElem.color = sf::Color(color.at("R"), color.at("G"), color.at("B"));
+			json pos = elem.at("Pos");
+			tempElem.position = sf::Vector2i(pos.at("X"), pos.at("Y"));
 			resultMatrix.add_element(tempElem);
 		}
 		 if (!_doubleFrame)
@@ -55,6 +55,10 @@ void NetworkPlayer::exchange_data()
 	catch (const json::out_of_range& e)
 	{
 		std::cerr << "Network Player can't handle _dataFrameString  ; Out of range error : " << e.what() << " ; String : " << _dataFrameString << '\n';
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "Network Player can't handle _dataFrameString ; Какая-то хуйня левая ваще! String : " << _dataFrameString << '\n';
 	}
 }
 

@@ -362,12 +362,12 @@ void RealPlayer::exchange_data()
 				json elemJSON;
 				if (buf[i][j])
 				{
-					elemJSON["Color"]["R"] = buf[i][j]->color.r;
-					elemJSON["Color"]["G"] = buf[i][j]->color.g;
-					elemJSON["Color"]["B"] = buf[i][j]->color.b;
+					elemJSON["Col"]["R"] = buf[i][j]->color.r;
+					elemJSON["Col"]["G"] = buf[i][j]->color.g;
+					elemJSON["Col"]["B"] = buf[i][j]->color.b;
 	
-					elemJSON["Position"]["X"] = buf[i][j]->position.x;
-					elemJSON["Position"]["Y"] = buf[i][j]->position.y;
+					elemJSON["Pos"]["X"] = buf[i][j]->position.x;
+					elemJSON["Pos"]["Y"] = buf[i][j]->position.y;
 					package["Data"].push_back(elemJSON);
 	                        }
 	                }

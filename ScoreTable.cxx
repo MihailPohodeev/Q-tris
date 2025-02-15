@@ -5,19 +5,23 @@ extern sf::RenderWindow* window;
 extern sf::Font* mainFont;
 
 // constructor.
-ScoreTable::ScoreTable(const sf::Vector2f& size) : _shape(size)
+ScoreTable::ScoreTable(const sf::Vector2f& size)
 {
 	_shape.setFillColor(sf::Color(75, 75, 75, 255));
+	_nextFigureShape.setFillColor(sf::Color(125, 125, 125, 255));
+
 	_score = 0;
 	_lines = 0;
 	_level = 0;
 	
 	_usernameHeader.setFont(*mainFont);
+	_nextFigureHeader.setFont(*mainFont);
 	_scoreHeader.setFont(*mainFont);
 	_linesHeader.setFont(*mainFont);
 	_levelHeader.setFont(*mainFont);
 
 	_usernameHeader.setString("Without Name");
+	_nextFigureHeader.setString("Next Figure :");
 	_scoreHeader.setString("SCORE : 0");
 	_linesHeader.setString("LINES : 0");
 	_levelHeader.setString("LEVEL : 0");
@@ -32,11 +36,13 @@ ScoreTable::ScoreTable(const sf::Vector2f& size) : _shape(size)
 void ScoreTable::set_size(const sf::Vector2f& size)
 {
 	_shape.setSize(size);
+	_nextFigureShape.setSize(sf::Vector2f(size.x * 0.55, size.x * 0.55));
 	U16 characterSize = static_cast<int>((size.x + size.y) / 25.f);
 	_usernameHeader.setCharacterSize(characterSize);
-        _scoreHeader.setCharacterSize(characterSize);
-        _linesHeader.setCharacterSize(characterSize);
-        _levelHeader.setCharacterSize(characterSize);
+	_nextFigureHeader.setCharacterSize(characterSize);
+    _scoreHeader.setCharacterSize(characterSize);
+    _linesHeader.setCharacterSize(characterSize);
+    _levelHeader.setCharacterSize(characterSize);
 }
 
 // return current size.
@@ -50,10 +56,13 @@ void ScoreTable::set_position(const sf::Vector2f& pos)
 {
 	_shape.setPosition(pos);
 	sf::Vector2f size = _shape.getSize();
+	sf::Vector2f nfsize = _nextFigureShape.getSize();
 	_usernameHeader.setPosition(sf::Vector2f(pos.x + size.x * 0.1f, pos.y + size.y * 0.075));
 	_scoreHeader.setPosition(sf::Vector2f(pos.x + size.x * 0.1f, pos.y + size.y * 0.15f));
 	_linesHeader.setPosition(sf::Vector2f(pos.x + size.x * 0.1f, pos.y + size.y * 0.225f));
 	_levelHeader.setPosition(sf::Vector2f(pos.x + size.x * 0.1f, pos.y + size.y * 0.30f));
+	_nextFigureHeader.setPosition(sf::Vector2f(pos.x + size.x * 0.1f, pos.y + size.y * 0.375f));
+	_nextFigureShape.setPosition(sf::Vector2f(pos.x + (size.x - nfsize.x) / 2, pos.y + size.y * 0.5f));
 }
 
 // return position of ScoreTable.
@@ -118,4 +127,6 @@ void ScoreTable::render() const
 	window->draw(_scoreHeader);
 	window->draw(_linesHeader);
 	window->draw(_levelHeader);
+	window->draw(_nextFigureHeader);
+	window->draw(_nextFigureShape);
 }
