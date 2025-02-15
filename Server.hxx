@@ -21,6 +21,7 @@ class Server
 	std::string _address;
 	U16 _port;
 	std::queue<std::string> _responseQueue;
+	char* _buffer;
 
 public:
 	// constructor.
@@ -43,7 +44,7 @@ public:
 	// send data to server.
 	bool send_data(const std::string&);
 	// receive data from server.
-	std::string receive_data();
+	size_t receive_data();
 	// dequeue response.
 	std::string dequeue_response();
 	// destructor.

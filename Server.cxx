@@ -12,6 +12,8 @@
 #include "Server.hxx"
 #include "json.hpp"
 
+#define BUFFER_SIZE 32000
+
 extern std::string username;
 extern U32 userID;
 extern bool isReady;
@@ -22,6 +24,7 @@ std::vector<std::string> splitJson(const std::string&);
 // contructor.
 Server::Server(const std::string& addr, U16 port)
 {
+	_buffer = new char[BUFFER_SIZE];
 	_port = port;
 	_address = addr;
 	_socket = socket(AF_INET, SOCK_STREAM, 0);
@@ -145,6 +148,7 @@ Server::~Server()
 {
 	// just close socket.
 	close(_socket);
+	delete [] _buffer;
 }
 
 // make request of room creation to server and connect to this room.
@@ -283,61 +287,76 @@ bool Server::send_data(const std::string& str)
 // dequeue response.
 std::string Server::dequeue_response()
 {
-	std::string received = receive_data();
+	static std::string lastWord = "";
 
-	if (received != "")
+	if (_responseQueue.size() == 0)
 	{
-		//std::vector<std::string> vec = splitJson(received);
-		//for (auto& x : vec)
-		//	_responseQueue.push(x);
-		_responseQueue.push(received);
+		size_t receivedBytes = receive_data();
+
+		if (receivedBytes != 0)
+		{
+			auto begin = _buffer;
+			auto end   = _buffer + receivedBytes - 1;
+			do
+			{
+				auto it = std::find_if(begin, end, [](char x) { return x == '\0';});
+				if (lastWord != "")
+				{
+					lastWord += std::string(begin);
+					_responseQueue.push(lastWord);
+					lastWord = "";
+				}
+				if (it == end)
+				{
+					try
+					{
+						std::string result(begin);
+						json::parse(result);
+						_responseQueue.push(result);
+					}
+					catch (const json::parse_error& e)
+					{
+						lastWord = std::string(begin);
+					}
+					break;
+				}
+				else
+				{
+					_responseQueue.push(std::string(begin));
+					begin = it + 1;
+				}
+			} while(1);
+		}
 	}
 
 	if (_responseQueue.size() == 0)
 		return "";
-	
+
 	std::string result = _responseQueue.front();
 	_responseQueue.pop();
 	return result;
 }
 
 // receive data from server.
-std::string Server::receive_data()
+size_t Server::receive_data()
 {
-	size_t sizeOfBuffer = 32000;
-	char* buffer = new char[sizeOfBuffer];
-	int receivedBytes;
-	
-	receivedBytes = recv(_socket, buffer, sizeOfBuffer - 1, 0);
+	int receivedBytes = 0;
+	receivedBytes = recv(_socket, _buffer, BUFFER_SIZE - 1, 0);
 	
 	if (receivedBytes < 0)
 	{
 		if (errno != EWOULDBLOCK && errno != EAGAIN)
 		{
 			std::cerr << "recv failed: " << strerror(errno) << std::endl;
-			delete [] buffer;
-			return "";
 		}
-		delete [] buffer;
-		return "";
+		return 0;
 	}
 	else if (receivedBytes == 0)
 	{
 		std::cerr << "Server is unavailable.\n";
-		delete [] buffer;
 		exit(-1);
 	}
-	
-	buffer[receivedBytes] = 0;
-	if (receivedBytes == 0)
-	{
-		delete [] buffer;
-		return "";
-	}
-	std::string result(buffer);
-	delete [] buffer;
-	std::cout << "Received : " << result << '\n';
-	return result;
+	return receivedBytes;
 }
 
 // make socket - non-blocking.
