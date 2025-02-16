@@ -20,6 +20,7 @@ public:
 	virtual ~PlayerObject() {};
 	virtual void update() = 0;
 	virtual void exchange_data() = 0;
+	virtual U8 get_next_figure_index() = 0;
 	virtual void set_double_frame(DoubleFrame* df) { _doubleFrame = df; }
 	virtual bool is_game_over() const { return _isGameOver; }
 	virtual U64 get_score() const { return _score; }

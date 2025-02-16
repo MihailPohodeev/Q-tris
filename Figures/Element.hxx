@@ -26,6 +26,7 @@ public:
 	void set_color(const sf::Color&);
 	sf::Color get_color() const;
 	void set_position(const sf::Vector2f&);
+	sf::Vector2f get_position() const;
 	void move(const sf::Vector2f&);
 	sf::Vector2f get_size() const;
 	void set_size(const sf::Vector2f&);

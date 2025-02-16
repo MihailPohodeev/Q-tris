@@ -52,6 +52,7 @@ void Window::update()
 	Matrix mat = _doubleFrame.get_matrix();
 	//std::cout << "retrieved matrix!\n";
 	_gameField.set_matrix(mat);
+	_scoreTable.set_next_figure_index(_player->get_next_figure_index());
 	//std::cout << "Finish update!\n";
 	//Matrix mat = _doubleFrame.get_matrix();
 	//struct ElementData*** buff = mat.get_buffer();

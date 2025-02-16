@@ -377,12 +377,12 @@ size_t Server::receive_data()
 		exit(-1);
 	}
 
-	std::cout << "Received :\n";
-	for (U32 i = 0; i < receivedBytes; i++)
-	{
-		std::cout << (_buffer[i] == 0 ? 'z' : _buffer[i]);
-	}
-	std::cout << '\n';
+	// std::cout << "Received :\n";
+	// for (U32 i = 0; i < receivedBytes; i++)
+	// {
+	// 	std::cout << (_buffer[i] == 0 ? 'z' : _buffer[i]);
+	// }
+	// std::cout << '\n';
 
 	return receivedBytes;
 }

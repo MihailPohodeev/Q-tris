@@ -3,7 +3,7 @@
 		"Username" : "Balabama"
 	},
 	"Server" : {
-		"IPAddress" : "62.109.31.76",
+		"IPAddress" : "127.0.0.1",
 		"Port" : 18881
 	},
 	"Client" : {

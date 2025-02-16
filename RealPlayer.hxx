@@ -2,6 +2,8 @@
 #define _REAL_PLAYER_HXX_
 
 #include <queue>
+#include <mutex>
+
 #include "Matrix.hxx"
 #include "DoubleFrame.hxx"
 #include "PlayerObject.hxx"
@@ -26,6 +28,8 @@ class RealPlayer : public PlayerObject
 	Figure* _currentFigure;
 	// matrix where the game is happens.
 	Matrix _matrixForWork;
+	// mutex for _figuresIndecesQueue guard.
+	mutable std::mutex _figuresIndecesQueueGuard;
 
 	// get new _currentFigure.
 	void _update_the_figure();
@@ -42,6 +46,8 @@ public:
 	void update() override;
 	// exchange data with server.
 	void exchange_data() override;
+	// get next index of figure.
+	U8 get_next_figure_index() override;
 };
 
 #endif

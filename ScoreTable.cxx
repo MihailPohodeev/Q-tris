@@ -1,12 +1,18 @@
 #include <string>
 #include "ScoreTable.hxx"
+#include "Figures/Figure.hxx"
 
 extern sf::RenderWindow* window;
 extern sf::Font* mainFont;
+extern Figure** figuresArray;
 
 // constructor.
 ScoreTable::ScoreTable(const sf::Vector2f& size)
 {
+	_elements = new Element*[4];
+	for (U8 i = 0; i < 4; i++)
+		_elements[i] = new Element(sf::Vector2f(size.x / 10, size.x / 10));
+
 	_shape.setFillColor(sf::Color(75, 75, 75, 255));
 	_nextFigureShape.setFillColor(sf::Color(125, 125, 125, 255));
 
@@ -30,6 +36,31 @@ ScoreTable::ScoreTable(const sf::Vector2f& size)
 
 	set_size(size);
 	set_position(sf::Vector2f(0.0f, 0.0f));
+}
+
+// copy-constructor.
+ScoreTable::ScoreTable(const ScoreTable& other)
+{
+	_elements = new Element*[4];
+	for (U8 i = 0; i < 4; i++)
+		_elements[i] = other._elements[i]->clone();
+}
+
+// destructor.
+ScoreTable::~ScoreTable()
+{
+	for (U8 i = 0; i < 4; i++)
+		delete _elements[i];
+	delete [] _elements;
+}
+
+// operator =.
+ScoreTable ScoreTable::operator= (ScoreTable other)
+{
+	Element** temp = _elements;
+	_elements = other._elements;
+	other._elements = temp;
+	return *this;
 }
 
 // set new size.
@@ -63,6 +94,13 @@ void ScoreTable::set_position(const sf::Vector2f& pos)
 	_levelHeader.setPosition(sf::Vector2f(pos.x + size.x * 0.1f, pos.y + size.y * 0.30f));
 	_nextFigureHeader.setPosition(sf::Vector2f(pos.x + size.x * 0.1f, pos.y + size.y * 0.375f));
 	_nextFigureShape.setPosition(sf::Vector2f(pos.x + (size.x - nfsize.x) / 2, pos.y + size.y * 0.5f));
+	_nextFigurePosition = sf::Vector2f(sf::Vector2f(pos.x + size.x * 0.45f, pos.y + size.y * 0.5f + nfsize.y * 0.5f));
+	sf::Vector2f firstElPos = _elements[0]->get_position();
+	for (U8 i = 0; i < 4; i++)
+	{
+		sf::Vector2f newPosition = sf::Vector2f(_nextFigurePosition.x + _elements[i]->get_position().x - firstElPos.x, _nextFigurePosition.y + _elements[i]->get_position().y - firstElPos.y);
+		_elements[i]->set_position(newPosition);
+	}
 }
 
 // return position of ScoreTable.
@@ -75,6 +113,19 @@ sf::Vector2f ScoreTable::get_position() const
 void ScoreTable::set_username(const std::string& str)
 {
 	_usernameHeader.setString(str);
+}
+
+// set next figure.
+void ScoreTable::set_next_figure_index(U8 figNumber)
+{
+	struct ElementData elData[4];
+	figuresArray[figNumber]->get_all_elements(elData);
+	for (U8 i = 0; i < 4; i++)
+	{
+		sf::Vector2f newPosition = sf::Vector2f(_nextFigurePosition.x + elData[i].position.x * _elements[i]->get_size().x, _nextFigurePosition.y + elData[i].position.y * _elements[i]->get_size().y);
+		_elements[i]->set_position(newPosition);
+		_elements[i]->set_color(elData[i].color);
+	}
 }
 
 // set and get score.
@@ -129,4 +180,6 @@ void ScoreTable::render() const
 	window->draw(_levelHeader);
 	window->draw(_nextFigureHeader);
 	window->draw(_nextFigureShape);
+	for (U8 i = 0; i < 4; i++)
+		_elements[i]->render();
 }

@@ -7,7 +7,7 @@
 
 using json = nlohmann::json;
 
-NetworkPlayer::NetworkPlayer(I32 id) : PlayerObject(), _userID(id) {}
+NetworkPlayer::NetworkPlayer(I32 id) : PlayerObject(), _userID(id), _nextFigureIndex(0) {}
 
 void NetworkPlayer::update()
 {
@@ -21,10 +21,12 @@ void NetworkPlayer::exchange_data()
 		return;
 	try
 	{
+		std::cout << "DataFrame : " << _dataFrameString << '\n';
 		dataFrameJSON = json::parse(_dataFrameString);
 		_score = dataFrameJSON.at("Score");
 		_level = dataFrameJSON.at("Level");
 		_lines = dataFrameJSON.at("Lines");
+		_nextFigureIndex = dataFrameJSON.at("NextFigure");
 		Matrix resultMatrix;
 		json dataArray = dataFrameJSON.at("Data");
 		for (const auto& elem : dataArray)
@@ -90,4 +92,10 @@ void NetworkPlayer::set_username(const std::string& username)
 void NetworkPlayer::set_data_frame_string(const std::string& str)
 {
 	_dataFrameString = str;
+}
+
+// get next index of figure.
+U8 NetworkPlayer::get_next_figure_index()
+{
+	return _nextFigureIndex;
 }

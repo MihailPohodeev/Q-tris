@@ -19,6 +19,11 @@ void Element::set_position(const sf::Vector2f& pos)
 	_shape.setPosition(pos);
 }
 
+sf::Vector2f Element::get_position() const
+{
+	return _shape.getPosition();
+}
+
 void Element::move(const sf::Vector2f& offset)
 {
 	_shape.move(offset);
