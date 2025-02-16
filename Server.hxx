@@ -3,6 +3,8 @@
 
 #include <string>
 #include <queue>
+#include <mutex>
+
 #include "setup.hxx"
 #include "json.hpp"
 
@@ -22,6 +24,7 @@ class Server
 	U16 _port;
 	std::queue<std::string> _responseQueue;
 	char* _buffer;
+	mutable std::mutex _sendingDataGuard;
 
 public:
 	// constructor.

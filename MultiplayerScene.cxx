@@ -208,6 +208,14 @@ void MultiplayerScene::exchange_data()
 						}
 					}
 				}
+				else if (command == "NewFigures")
+				{
+					std::cout << "New Figures got!\n";
+					std::vector<U8> vec;
+					for (auto& x : responseJSON.at("Data"))
+						vec.push_back((U8)x);
+					_realPlayer->set_new_figures(vec);
+				}
 			}
 			catch(const json::parse_error& e)
 			{

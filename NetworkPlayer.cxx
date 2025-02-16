@@ -21,12 +21,16 @@ void NetworkPlayer::exchange_data()
 		return;
 	try
 	{
-		std::cout << "DataFrame : " << _dataFrameString << '\n';
 		dataFrameJSON = json::parse(_dataFrameString);
 		_score = dataFrameJSON.at("Score");
 		_level = dataFrameJSON.at("Level");
 		_lines = dataFrameJSON.at("Lines");
 		_nextFigureIndex = dataFrameJSON.at("NextFigure");
+		if (_nextFigureIndex < 0 || _nextFigureIndex > 6)
+		{
+			std::cerr << "Next figure is invalid : " << (U32)_nextFigureIndex << '\n';
+			exit(-1);
+		}
 		Matrix resultMatrix;
 		json dataArray = dataFrameJSON.at("Data");
 		for (const auto& elem : dataArray)

@@ -2,6 +2,7 @@
 #define _REAL_PLAYER_HXX_
 
 #include <queue>
+#include <vector>
 #include <mutex>
 
 #include "Matrix.hxx"
@@ -20,6 +21,8 @@ class RealPlayer : public PlayerObject
 	sf::Clock _clock;
 	// clock for exchanging data with Server.
 	sf::Clock _clockForDataSending;
+	// clock for receiving figures.
+	sf::Clock _clockReceivingFigures;
 	// controller for managing.
 	Controller* _controller;
 	// queue for getting the same figures by clients.
@@ -48,6 +51,8 @@ public:
 	void exchange_data() override;
 	// get next index of figure.
 	U8 get_next_figure_index() override;
+	// set new figures.
+	void set_new_figures(const std::vector<U8>&);
 };
 
 #endif

@@ -39,6 +39,7 @@ int SCR_WIDTH  = 800;
 int SCR_HEIGHT = 450;
 
 std::string username;
+std::string modeQueue = "Same";
 I32 userID;
 bool isReady = false;
 

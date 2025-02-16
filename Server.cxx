@@ -266,6 +266,7 @@ void Server::make_non_ready()
 // send data to server.
 bool Server::send_data(const std::string& str)
 {
+	std::lock_guard<std::mutex> lock(_sendingDataGuard);
 	size_t totalSent = 0;
 	while (totalSent < str.size())
 	{
