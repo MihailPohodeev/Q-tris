@@ -24,6 +24,7 @@ public:
 	MultiplayerScene(U8, bool, U8);
 	void update() override;
 	void render() const override;
+	virtual tgui::Gui* get_gui_ptr() const override;
 	void exchange_data() override;
 	~MultiplayerScene();
 };

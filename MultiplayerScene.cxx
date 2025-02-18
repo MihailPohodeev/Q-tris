@@ -172,6 +172,11 @@ void MultiplayerScene::render() const
 			_windows[i]->render();
 }
 
+tgui::Gui* MultiplayerScene::get_gui_ptr() const
+{
+	return nullptr;
+}
+
 void MultiplayerScene::exchange_data()
 {
 	while(window->isOpen())

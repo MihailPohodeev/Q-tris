@@ -2,6 +2,8 @@
 #include <fstream>
 #include <cstdlib>
 #include <thread>
+#include <TGUI/TGUI.hpp>
+#include <TGUI/Backend/SFML-Graphics.hpp>
 
 #include "json.hpp"
 #include "Figures/Element.hxx"
@@ -87,10 +89,10 @@ int main(int argc, char** argv)
 	server = new Server(ipAddress, port);
 
 	// window initialization.
-	//sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
-	//SCR_WIDTH = desktop.width;
-	//SCR_HEIGHT = desktop.height;
-	//window = new sf::RenderWindow(desktop, "Q-tris", sf::Style::Fullscreen);
+	// sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
+	// SCR_WIDTH = desktop.width;
+	// SCR_HEIGHT = desktop.height;
+	// window = new sf::RenderWindow(desktop, "Q-tris", sf::Style::Fullscreen);
 	window = new sf::RenderWindow(sf::VideoMode(SCR_WIDTH, SCR_HEIGHT), "Q-tris");
 
 	// font initialization.
@@ -203,16 +205,22 @@ int main(int argc, char** argv)
 		}
 	} while(1);
 
-	MultiplayerScene multiplayerScene(playersCount, true, 0);
-	currentScene = &multiplayerScene;
+	//MultiplayerScene multiplayerScene(playersCount, true, 0);
+	//currentScene = &multiplayerScene;
+	currentScene = new MainMenu();
 	
 	std::cout << "start game : \n";
-	std::thread dataTransferThread(&MultiplayerScene::exchange_data, &multiplayerScene);
+	std::thread dataTransferThread(&Scene::exchange_data, currentScene);
 	while (window->isOpen())
 	{
 		sf::Event event;
 		while (window->pollEvent(event))
 		{
+			tgui::Gui* gui = currentScene->get_gui_ptr();
+			if (gui)
+			{
+				gui->handleEvent(event);
+			}
 			if (event.type == sf::Event::Closed)
 				window->close();
 		}
@@ -222,8 +230,8 @@ int main(int argc, char** argv)
 		//realWin.update();
 		//realWin.render();
 		window->clear();
-		multiplayerScene.update();
-		multiplayerScene.render();
+		currentScene->update();
+		currentScene->render();
 		window->display();
 	}
 	dataTransferThread.join();
