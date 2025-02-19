@@ -9,8 +9,8 @@ extern int SCR_WIDTH;
 extern int SCR_HEIGHT;
 extern bool isReady;
 extern I32 userID;
-extern Server* server;
-extern sf::RenderWindow* window;
+extern Server *server;
+extern sf::RenderWindow *window;
 extern std::string username;
 
 MultiplayerScene::MultiplayerScene(U8 playersCount, bool isSameQueue, U8 startLevel) : _windows(playersCount)
@@ -20,7 +20,7 @@ MultiplayerScene::MultiplayerScene(U8 playersCount, bool isSameQueue, U8 startLe
 		throw TooFewPlayersException(playersCount);
 	else if (playersCount > 4)
 		throw TooManyPlayersException(playersCount);
-	
+
 	// create controller and real player.
 	_controller = new KeyboardController1();
 	_realPlayer = new RealPlayer();
@@ -46,14 +46,13 @@ MultiplayerScene::MultiplayerScene(U8 playersCount, bool isSameQueue, U8 startLe
 		for (U8 i = 1; i < _windows.size(); i++)
 		{
 			_windows[i] = new Window(netWindowSize);
-			NetworkPlayer* netPlayer = new NetworkPlayer(0);
+			NetworkPlayer *netPlayer = new NetworkPlayer(0);
 			_netPlayers.push_back(netPlayer);
 			_windows[i]->set_player_object(netPlayer);
 
 			float smallOffset = mainWindowSize.y - minimalSize * netPlayersCount;
 			smallOffset /= (netPlayersCount + 1);
-			_windows[i]->set_position(sf::Vector2f(posX, offset \
-					+ smallOffset * i + minimalSize * (i - 1)));
+			_windows[i]->set_position(sf::Vector2f(posX, offset + smallOffset * i + minimalSize * (i - 1)));
 		}
 	}
 	else
@@ -73,7 +72,7 @@ MultiplayerScene::MultiplayerScene(U8 playersCount, bool isSameQueue, U8 startLe
 		for (U8 i = 1; i < _windows.size(); i++)
 		{
 			_windows[i] = new Window(netWindowsSize);
-			NetworkPlayer* netPlayer = new NetworkPlayer(0);
+			NetworkPlayer *netPlayer = new NetworkPlayer(0);
 			_netPlayers.push_back(netPlayer);
 			_windows[i]->set_player_object(netPlayer);
 			_windows[i]->set_position(sf::Vector2f(posX + size * (i - 1) + smallOffset * i, posY));
@@ -97,7 +96,7 @@ MultiplayerScene::MultiplayerScene(U8 playersCount, bool isSameQueue, U8 startLe
 			json users = responseJSON["Users"];
 			auto iter = _netPlayers.begin();
 			auto winIter = ++_windows.begin();
-			for(const auto& user : users)
+			for (const auto &user : users)
 			{
 				(*iter)->set_ID(user["ID"]);
 				(*iter)->set_username(user["Username"]);
@@ -106,25 +105,23 @@ MultiplayerScene::MultiplayerScene(U8 playersCount, bool isSameQueue, U8 startLe
 				++iter;
 			}
 			break;
-
 		}
-		catch(const json::parse_error& e)
+		catch (const json::parse_error &e)
 		{
-			std::cerr << "Can't get room's parameters ; Parse error at byte : " << e.byte << " : " << e.what() << " ; String : " << response<< '\n';
+			std::cerr << "Can't get room's parameters ; Parse error at byte : " << e.byte << " : " << e.what() << " ; String : " << response << '\n';
 			exit(-1);
 		}
-		catch (const json::type_error& e)
+		catch (const json::type_error &e)
 		{
 			std::cerr << "Can't get room's parameters ; Type error : " << e.what() << " ; String : " << response << '\n';
 			exit(-1);
 		}
-		catch (const json::out_of_range& e)
+		catch (const json::out_of_range &e)
 		{
 			std::cerr << "Can't get room's parameters ; Out of range error : " << e.what() << " ; String : " << response << '\n';
 			exit(-1);
 		}
-	} while(1);
-
+	} while (1);
 }
 
 MultiplayerScene::~MultiplayerScene()
@@ -172,78 +169,76 @@ void MultiplayerScene::render() const
 			_windows[i]->render();
 }
 
-tgui::Gui* MultiplayerScene::get_gui_ptr() const
+tgui::Gui *MultiplayerScene::get_gui_ptr() const
 {
 	return nullptr;
 }
 
 void MultiplayerScene::exchange_data()
 {
-	while(window->isOpen())
+	_realPlayer->exchange_data();
+	std::string dataFrame = server->dequeue_response();
+	if (dataFrame != "")
 	{
-		_realPlayer->exchange_data();
-		std::string dataFrame = server->dequeue_response();
-		if (dataFrame != "")
+		json responseJSON;
+		try
 		{
-			json responseJSON;
-			try
+			responseJSON = json::parse(dataFrame);
+			std::string command = responseJSON["Command"];
+
+			if (command == "DataFrame")
 			{
-				responseJSON = json::parse(dataFrame);
-				std::string command = responseJSON["Command"];
-
-				if (command == "DataFrame")
+				json arrayData = responseJSON["Data"];
+				for (const auto &frame : arrayData)
 				{
-					json arrayData = responseJSON["Data"];
-					for (const auto& frame : arrayData)
-					{
-						I32 id = frame["UserID"];
-						if (id == userID)
-							continue;
+					I32 id = frame["UserID"];
+					if (id == userID)
+						continue;
 
-						auto user = std::find_if(_netPlayers.begin(), _netPlayers.end(), \
-								[id](NetworkPlayer* np) \
-								{return np->get_ID() == id;});
-						if (user == _netPlayers.end())
-						{
-							std::cerr << "No such user ; ID : " << frame["UserID"] << '\n';
-						}
-						else
-						{
-							(*user)->set_data_frame_string(frame.dump());
-						}
+					auto user = std::find_if(_netPlayers.begin(), _netPlayers.end(),
+											 [id](NetworkPlayer *np)
+											 { return np->get_ID() == id; });
+					if (user == _netPlayers.end())
+					{
+						std::cerr << "No such user ; ID : " << frame["UserID"] << '\n';
+					}
+					else
+					{
+						(*user)->set_data_frame_string(frame.dump());
 					}
 				}
-				else if (command == "NewFigures")
-				{
-					std::cout << "New Figures got!\n";
-					std::vector<U8> vec;
-					for (auto& x : responseJSON.at("Data"))
-						vec.push_back((U8)x);
-					_realPlayer->set_new_figures(vec);
-				}
 			}
-			catch(const json::parse_error& e)
+			else if (command == "NewFigures")
 			{
-				std::cerr << "Network Frames handling error ; Parse error at byte : " << e.byte << " : " << e.what() << " ; String : " << dataFrame << '\n';
+				std::cout << "New Figures got!\n";
+				std::vector<U8> vec;
+				for (auto &x : responseJSON.at("Data"))
+					vec.push_back((U8)x);
+				_realPlayer->set_new_figures(vec);
 			}
-			catch (const json::type_error& e)
-			{
-				std::cerr << "Network Frames handling error ; Type error : " << e.what() << " ; String : " << dataFrame << '\n';
-			}
-			catch (const json::out_of_range& e)
-			{
-				std::cerr << "Network Frames handling error ; Out of range error : " << e.what() << " ; String : " << dataFrame << '\n';
-			}
-			catch (const std::exception& e) {
-				std::cerr << "Network Frames handling error ; " << e.what() << "\n; String : " << dataFrame << '\n';
-			}
+		}
+		catch (const json::parse_error &e)
+		{
+			std::cerr << "Network Frames handling error ; Parse error at byte : " << e.byte << " : " << e.what() << " ; String : " << dataFrame << '\n';
+		}
+		catch (const json::type_error &e)
+		{
+			std::cerr << "Network Frames handling error ; Type error : " << e.what() << " ; String : " << dataFrame << '\n';
+		}
+		catch (const json::out_of_range &e)
+		{
+			std::cerr << "Network Frames handling error ; Out of range error : " << e.what() << " ; String : " << dataFrame << '\n';
+		}
+		catch (const std::exception &e)
+		{
+			std::cerr << "Network Frames handling error ; " << e.what() << "\n; String : " << dataFrame << '\n';
+		}
 
-			for (auto it = _netPlayers.begin(); it != _netPlayers.end(); ++it)
+		for (auto it = _netPlayers.begin(); it != _netPlayers.end(); ++it)
+		{
+			if (*it)
 			{
-				if (*it)
-				{
-					(*it)->exchange_data();
-				}
+				(*it)->exchange_data();
 			}
 		}
 	}

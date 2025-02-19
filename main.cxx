@@ -205,12 +205,12 @@ int main(int argc, char** argv)
 		}
 	} while(1);
 
-	//MultiplayerScene multiplayerScene(playersCount, true, 0);
-	//currentScene = &multiplayerScene;
-	currentScene = new MainMenu();
+	MultiplayerScene multiplayerScene(playersCount, true, 0);
+	currentScene = &multiplayerScene;
+	//currentScene = new MainMenu();
 	
 	std::cout << "start game : \n";
-	std::thread dataTransferThread(&Scene::exchange_data, currentScene);
+	std::thread dataTransferThread([](){while(window->isOpen()) currentScene->exchange_data();});
 	while (window->isOpen())
 	{
 		sf::Event event;
