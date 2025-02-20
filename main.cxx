@@ -2,6 +2,7 @@
 #include <fstream>
 #include <cstdlib>
 #include <thread>
+#include <mutex>
 #include <TGUI/TGUI.hpp>
 #include <TGUI/Backend/SFML-Graphics.hpp>
 
@@ -36,6 +37,8 @@ sf::Font* mainFont;
 Figure** figuresArray;
 Server* server;
 Scene* currentScene;
+Scene* nextScene;
+std::mutex currentSceneGuard;
 
 int SCR_WIDTH  = 800;
 int SCR_HEIGHT = 450;
@@ -51,7 +54,7 @@ int main(int argc, char** argv)
 	// server initialization.	
 	std::ifstream configStream("config.json");
 	if (!configStream.is_open()) {
-		std::cerr << "Could not open the config file!" << std::endl;
+		std::cerr << "Could not open the config file!" << '\n';
 		return 1;
 	}
 
@@ -153,29 +156,8 @@ int main(int argc, char** argv)
 		I32 roomID = server->create_room(gp);
 		std::cout << "Room_ID : " << roomID << '\n';
 	}
+
 	server->make_ready();
-	
-	/*
-	KeyboardController1 controller;
-	KeyboardController1 controller1;
-	JoystickController joyControll(0);
-	
-	RealPlayer rp;
-	NetworkPlayer np;
-	rp.set_controller(&controller);
-
-	Window realWin(sf::Vector2f(500.f, 500.f));
-	realWin.set_player_object(&rp);
-	realWin.set_position(sf::Vector2f(150.f, 50.f));
-	
-	Window netWin(sf::Vector2f(300.f, 300.f));
-	netWin.set_player_object(&np);
-	netWin.set_position(sf::Vector2f(400.f, 100.f));
-
-	//Scene* currentScene = new MainMenu();
-	
-	MultiplayerScene multiplayerScene(playerCount, true, 0);
-	*/
 
 	do
 	{
@@ -205,30 +187,35 @@ int main(int argc, char** argv)
 		}
 	} while(1);
 
-	MultiplayerScene multiplayerScene(playersCount, true, 0);
-	currentScene = &multiplayerScene;
-	//currentScene = new MainMenu();
+	//MultiplayerScene multiplayerScene(playersCount, true, 0);
+	//currentScene = &multiplayerScene;
+	currentScene = new MainMenu();
 	
 	std::cout << "start game : \n";
-	std::thread dataTransferThread([](){while(window->isOpen()) currentScene->exchange_data();});
+	std::thread dataTransferThread([](){while(window->isOpen()) { std::lock_guard<std::mutex> lock(currentSceneGuard); currentScene->exchange_data();}});
 	while (window->isOpen())
 	{
 		sf::Event event;
 		while (window->pollEvent(event))
 		{
-			tgui::Gui* gui = currentScene->get_gui_ptr();
-			if (gui)
-			{
-				gui->handleEvent(event);
-			}
 			if (event.type == sf::Event::Closed)
 				window->close();
+			{
+				std::lock_guard<std::mutex> lock(currentSceneGuard);
+				tgui::Gui* gui = currentScene->get_gui_ptr();
+				if (gui)
+				{
+					gui->handleEvent(event);
+				}
+				if (nextScene)
+				{
+					delete currentScene;
+					currentScene = nextScene;
+					nextScene = nullptr;
+				}
+			}
 		}
-		//server.send_data("Looser");
-		//std::string message = server.receive_data();
-		//std::cout << message << '\n';
-		//realWin.update();
-		//realWin.render();
+
 		window->clear();
 		currentScene->update();
 		currentScene->render();
@@ -238,7 +225,7 @@ int main(int argc, char** argv)
 
 	for (U8 i = 0; i < 7; i++)
 		delete figuresArray[i];
-	//delete currentScene;
+	delete currentScene;
 	delete [] figuresArray;
 	delete mainFont;
 	delete server;

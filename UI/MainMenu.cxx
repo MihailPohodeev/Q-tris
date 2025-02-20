@@ -1,10 +1,11 @@
 #include "MainMenu.hxx"
 #include "../MultiplayerScene.hxx"
+#include "MultiplayerMenu.hxx"
 
 extern int SCR_WIDTH;
 extern int SCR_HEIGHT;
 extern sf::RenderWindow* window;
-extern Scene* currentScene;
+extern Scene* nextScene;
 
 MainMenu::MainMenu() : _gui(*window), _background(sf::Vector2f(SCR_WIDTH, SCR_HEIGHT))
 {
@@ -29,7 +30,7 @@ MainMenu::MainMenu() : _gui(*window), _background(sf::Vector2f(SCR_WIDTH, SCR_HE
 	_settingsButton->setPosition(posX, posY + sizeY * 3);
 	_exitButton->setPosition(posX, posY  + sizeY * 4.5);
 
-	_multiPlayerButton->onClick([&](){delete currentScene; currentScene = new MultiplayerScene(2, true, 0);});
+	_multiPlayerButton->onClick([&](){nextScene = new MultiplayerMenu();});
 	_exitButton->onClick([](){exit(-1);});
 
 	_gui.add(_singlePlayerButton);
@@ -50,6 +51,7 @@ tgui::Gui* MainMenu::get_gui_ptr() const
 
 void MainMenu::render() const
 {
+	window->draw(_background);
 	_gui.draw();
 }
 
