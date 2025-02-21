@@ -50,6 +50,12 @@ void RealPlayer::set_controller(Controller* cntrlr)
 	_controller = cntrlr;
 }
 
+// set level.
+void RealPlayer::set_level(U32 level)
+{
+	_level = level;
+}
+
 // set new figures.
 void RealPlayer::set_new_figures(const std::vector<U8>& vec)
 {

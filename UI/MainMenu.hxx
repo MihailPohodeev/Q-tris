@@ -12,6 +12,8 @@ class MainMenu : public Scene
 	sf::RectangleShape _background;
 	mutable tgui::Gui _gui;
 
+	tgui::Label::Ptr _usernameLabel;
+	tgui::EditBox::Ptr _usernameEditBox;
 	tgui::Button::Ptr _singlePlayerButton;
 	tgui::Button::Ptr _multiPlayerButton;
 	tgui::Button::Ptr _settingsButton;

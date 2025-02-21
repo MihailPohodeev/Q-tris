@@ -45,6 +45,8 @@ public:
 	virtual ~RealPlayer() {}
 	// set controller.
 	void set_controller(Controller*);
+	// set level.
+	void set_level(U32);
 	// update data.
 	void update() override;
 	// exchange data with server.

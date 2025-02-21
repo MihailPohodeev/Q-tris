@@ -1,0 +1,30 @@
+#ifndef _SINGLE_PLAYER_MENU_HXX_
+#define _SINGLE_PLAYER_MENU_HXX_
+
+#include <TGUI/TGUI.hpp>
+#include <TGUI/Backend/SFML-Graphics.hpp>
+#include <string>
+
+#include "../Scene.hxx"
+
+class SinglePlayerMenu : public Scene
+{
+	mutable tgui::Gui _gui;
+
+    std::string _previousText;
+
+    tgui::Label::Ptr _startLevelLabel;
+
+    tgui::EditBox::Ptr _startLevelEditBox;
+
+	tgui::Button::Ptr _startGameButton;
+	tgui::Button::Ptr _backButton;
+public:
+    SinglePlayerMenu();
+	void update() override;
+	void render() const override;
+	virtual tgui::Gui* get_gui_ptr() const override;
+	void exchange_data() override;
+};
+
+#endif

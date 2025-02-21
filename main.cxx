@@ -26,6 +26,7 @@
 #include "Scene.hxx"
 #include "UI/MainMenu.hxx"
 #include "MultiplayerScene.hxx"
+#include "SinglePlayerScene.hxx"
 #include "functions.hxx"
 #include "UI/CreateRoomMenu.hxx"
 
@@ -44,7 +45,7 @@ int SCR_WIDTH  = 800;
 int SCR_HEIGHT = 450;
 
 std::string username;
-std::string modeQueue = "Same";
+std::string modeQueue = "Different";
 I32 userID;
 bool isReady = false;
 

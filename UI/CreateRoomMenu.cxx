@@ -52,6 +52,10 @@ CreateRoomMenu::CreateRoomMenu() :  _gui(*window)
     _createRoomButton = tgui::Button::create("Create new Room");
 	_backButton = tgui::Button::create("Back");
 
+    _playersCountLabel->getRenderer()->setTextColor(tgui::Color::White);
+    _gameModeLabel->getRenderer()->setTextColor(tgui::Color::White);
+    _startLevelLabel->getRenderer()->setTextColor(tgui::Color::White);
+
     int sizeX = SCR_WIDTH / 5;
 	int sizeY = sizeX / 4;
 	_createRoomButton->setSize(sizeX, sizeY);
