@@ -31,7 +31,7 @@ MainMenu::MainMenu() : _gui(*window), _background(sf::Vector2f(SCR_WIDTH, SCR_HE
 	_exitButton->setPosition(posX, posY  + sizeY * 4.5);
 
 	_multiPlayerButton->onClick([&](){nextScene = new MultiplayerMenu();});
-	_exitButton->onClick([](){exit(-1);});
+	_exitButton->onClick([](){window->close();});
 
 	_gui.add(_singlePlayerButton);
 	_gui.add(_multiPlayerButton);

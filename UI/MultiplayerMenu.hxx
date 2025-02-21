@@ -14,8 +14,10 @@ class MultiplayerMenu : public Scene
 
 	tgui::Button::Ptr _createRoomButton;
 	tgui::Button::Ptr _backButton;
+	tgui::ListBox::Ptr _listBox;
 public:
     MultiplayerMenu();
+	~MultiplayerMenu();
 	void update() override;
 	void render() const override;
 	virtual tgui::Gui* get_gui_ptr() const override;
