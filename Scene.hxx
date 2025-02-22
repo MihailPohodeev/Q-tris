@@ -11,6 +11,7 @@ public:
 	virtual void render() const = 0;
 	virtual tgui::Gui* get_gui_ptr() const = 0;
 	virtual void exchange_data() = 0;
+	virtual ~Scene() {}
 };
 
 #endif

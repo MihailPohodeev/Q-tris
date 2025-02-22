@@ -17,11 +17,11 @@ public:
 	// constructor.
 	// parameters: players count, isSameQueue, start level.
 	SinglePlayerScene(U32);
+	~SinglePlayerScene();
 	void update() override;
 	void render() const override;
 	virtual tgui::Gui* get_gui_ptr() const override;
 	void exchange_data() override;
-	~SinglePlayerScene();
 };
 
 #endif

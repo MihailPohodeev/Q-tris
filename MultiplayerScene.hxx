@@ -22,11 +22,11 @@ public:
 	// constructor.
 	// parameters: players count, isSameQueue, start level.
 	MultiplayerScene(U8, bool, U8);
+	~MultiplayerScene();
 	void update() override;
 	void render() const override;
 	virtual tgui::Gui* get_gui_ptr() const override;
 	void exchange_data() override;
-	~MultiplayerScene();
 };
 
 // exception: too few players for creation scene.

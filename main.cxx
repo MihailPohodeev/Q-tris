@@ -171,6 +171,7 @@ int main(int argc, char** argv)
 			if (nextScene)
 			{
 				std::lock_guard<std::mutex> lock(currentSceneGuard);
+				std::cout << "destroy current scene!\n";
 				delete currentScene;
 				currentScene = nextScene;
 				nextScene = nullptr;

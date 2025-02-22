@@ -20,6 +20,7 @@ class MainMenu : public Scene
 	tgui::Button::Ptr _exitButton;
 public:
 	MainMenu();
+	~MainMenu();
 	void update() override;
 	void render() const override;
 	virtual tgui::Gui* get_gui_ptr() const override;

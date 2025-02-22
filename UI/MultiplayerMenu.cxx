@@ -66,6 +66,7 @@ MultiplayerMenu::MultiplayerMenu() :  _gui(*window)
 		std::cerr << "Parse error : " << e.what() << '\n';
 		exit(-1);
 	}
+	configStream.close();
 
 	std::string ipAddress;
 	U16 port;

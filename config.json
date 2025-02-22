@@ -1,15 +1,1 @@
-{
-	"Player" : {
-		"Username" : "Balabama"
-	},
-	"Server" : {
-		"IPAddress" : "127.0.0.1",
-		"Port" : 18881
-	},
-	"Client" : {
-		"Mode" : "Multiplayer",
-		"PlayersCount" : 2,
-		"Queue" : "Same",
-		"StartLevel" : 0
-	}
-}
+{"Client":{"Mode":"Multiplayer","PlayersCount":2,"Queue":"Same","StartLevel":0},"Player":{"Username":"Kal_Kalich"},"Server":{"IPAddress":"127.0.0.1","Port":18881}}

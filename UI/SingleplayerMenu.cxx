@@ -24,6 +24,7 @@ SinglePlayerMenu::SinglePlayerMenu() :  _gui(*window)
 
     _startLevelEditBox->setSize(50, 25);
     _startLevelEditBox->setPosition(labPos.x + 100, labPos.y * 0.99);
+    _startLevelEditBox->setText("0");
 
     int sizeX = SCR_WIDTH / 5;
 	int sizeY = sizeX / 4;
@@ -39,7 +40,7 @@ SinglePlayerMenu::SinglePlayerMenu() :  _gui(*window)
 	int posY = (SCR_HEIGHT) * 0.75;
 	_startGameButton->setPosition(posX, posY);
 	_backButton->setPosition(posX * 3, posY);
-    _startGameButton->onClick([&](){nextScene = new SinglePlayerScene(std::stoi(_previousText));});
+    _startGameButton->onClick([&](){nextScene = new SinglePlayerScene(std::stoi(_previousText != "" ? _previousText : "0"));});
     _backButton->onClick([&](){nextScene = new MainMenu();});
 
     _gui.add(_startGameButton);

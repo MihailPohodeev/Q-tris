@@ -21,6 +21,7 @@ class SinglePlayerMenu : public Scene
 	tgui::Button::Ptr _backButton;
 public:
     SinglePlayerMenu();
+	//~SinglePlayerMenu();
 	void update() override;
 	void render() const override;
 	virtual tgui::Gui* get_gui_ptr() const override;
