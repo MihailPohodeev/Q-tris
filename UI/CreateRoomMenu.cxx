@@ -1,11 +1,14 @@
 #include "CreateRoomMenu.hxx"
 #include "../setup.hxx"
 #include "MultiplayerMenu.hxx"
+#include "Lobby.hxx"
+#include "../Server.hxx"
 
 extern int SCR_WIDTH;
 extern int SCR_HEIGHT;
 extern Scene* nextScene;
 extern sf::RenderWindow* window;
+extern Server* server;
 
 CreateRoomMenu::CreateRoomMenu() :  _gui(*window)
 {
@@ -30,6 +33,8 @@ CreateRoomMenu::CreateRoomMenu() :  _gui(*window)
     _diffModeRadioButton->setPosition(posLabels.x * 3, posLabels.y * 1.6);
     _startLevelLabel->setPosition(posLabels.x, posLabels.y * 2.2);
     _startLevelEditBox->setPosition(posLabels.x * 1.7, posLabels.y * 2.1);
+
+    _sameModeRadioButton->setEnabled(true);
     
     //_playersCountLabel->setTextColor(tgui::Color::White); // Устанавливаем цвет текста
     //_playersCountLabel->setFont(font); // Устанавливаем шрифт
@@ -68,6 +73,13 @@ CreateRoomMenu::CreateRoomMenu() :  _gui(*window)
 	int posY = (SCR_HEIGHT) * 0.75;
 	_createRoomButton->setPosition(posX, posY);
 	_backButton->setPosition(posX * 3, posY);
+    _createRoomButton->onClick([&]()
+    {
+        struct GameParameter gp {(U8)_playersCountSlider->getValue(), 0, _sameModeRadioButton->isEnabled()};
+        I32 roomID = server->create_room(gp);
+        std::cout << "RoomID : " << roomID << '\n';
+        nextScene = new Lobby();
+    });
     _backButton->onClick([&](){nextScene = new MultiplayerMenu();});
 
     _gui.add(_playersCountLabel);

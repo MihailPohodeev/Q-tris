@@ -32,13 +32,13 @@
 
 using json = nlohmann::json;
 
-sf::RenderWindow* window;
-sf::Font* mainFont;
+sf::RenderWindow* window = nullptr;
+sf::Font* mainFont = nullptr;
 
-Figure** figuresArray;
-Server* server;
-Scene* currentScene;
-Scene* nextScene;
+Figure** figuresArray = nullptr;
+Server* server = nullptr;
+Scene* currentScene = nullptr;
+Scene* nextScene = nullptr;
 std::mutex currentSceneGuard;
 
 int SCR_WIDTH  = 800;
@@ -171,7 +171,6 @@ int main(int argc, char** argv)
 			if (nextScene)
 			{
 				std::lock_guard<std::mutex> lock(currentSceneGuard);
-				std::cout << "destroy current scene!\n";
 				delete currentScene;
 				currentScene = nextScene;
 				nextScene = nullptr;

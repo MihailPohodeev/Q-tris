@@ -42,6 +42,8 @@ public:
 	void make_ready();
 	// make me non ready.
 	void make_non_ready();
+	// request rooms list.
+	void get_rooms_list();
 	// loose game.
 	void loose_game();
 	// send data to server.

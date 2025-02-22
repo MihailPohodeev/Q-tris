@@ -243,6 +243,14 @@ void Server::get_room_parameters()
 	send_data(request.dump());
 }
 
+// request rooms list.
+void Server::get_rooms_list()
+{
+	json request;
+	request["Command"] = "GetRoomsList";
+	send_data(request.dump());
+}
+
 // make me ready.
 void Server::make_ready()
 {

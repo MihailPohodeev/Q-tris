@@ -10,6 +10,9 @@
 class Lobby : public Scene
 {
     mutable tgui::Gui _gui;
+
+    tgui::Button::Ptr _disconnectButton;
+    tgui::Button::Ptr _readyButton;
 public:
     Lobby();
     void update() override;

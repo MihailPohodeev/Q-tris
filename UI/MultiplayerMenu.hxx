@@ -8,6 +8,7 @@
 
 class MultiplayerMenu : public Scene
 {
+	sf::Clock _clock;
 	sf::Texture _texture;
 	sf::RectangleShape _background;
 	mutable tgui::Gui _gui;

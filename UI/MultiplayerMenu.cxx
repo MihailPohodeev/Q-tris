@@ -12,12 +12,12 @@ using json = nlohmann::json;
 
 extern int SCR_WIDTH;
 extern int SCR_HEIGHT;
-extern Scene* nextScene;
-extern sf::RenderWindow* window;
+extern Scene *nextScene;
+extern sf::RenderWindow *window;
 extern std::string username;
-extern Server* server;
+extern Server *server;
 
-MultiplayerMenu::MultiplayerMenu() :  _gui(*window)
+MultiplayerMenu::MultiplayerMenu() : _gui(*window)
 {
 	_createRoomButton = tgui::Button::create("Create new Room");
 	_backButton = tgui::Button::create("Back");
@@ -36,80 +36,117 @@ MultiplayerMenu::MultiplayerMenu() :  _gui(*window)
 	_backButton->setPosition(posX * 3, posY);
 	_listBox->setPosition((SCR_WIDTH - listSize.x) / 2, SCR_HEIGHT * 0.2f);
 
-	_listBox->addItem("Item 1");
-    _listBox->addItem("Item 2");
-    _listBox->addItem("Item 3");
-    _listBox->addItem("Item 4");
-    _listBox->addItem("Item 5");
-	
-	_createRoomButton->onClick([&](){nextScene = new CreateRoomMenu();});
-	_backButton->onClick([&](){nextScene = new MainMenu();});
+	_createRoomButton->onClick([&]()
+							   { nextScene = new CreateRoomMenu(); });
+	_backButton->onClick([&]()
+						 { nextScene = new MainMenu(); });
 
 	_gui.add(_createRoomButton);
 	_gui.add(_backButton);
 	_gui.add(_listBox);
 
+	_listBox->onItemSelect([&]() {
+        // Get the selected item
+        std::string selectedItem = _listBox->getSelectedItem().toStdString();
+        // Perform an action based on the selected item
+        std::cout << "Selected item: " << selectedItem << '\n';
+    });
+
 	// server creation.
-	std::ifstream configStream("config.json");
-	if (!configStream.is_open()) {
-		std::cerr << "Could not open the config file!" << '\n';
-		exit(-1);
-	}
-
-	json config;
-	try
+	if (!server)
 	{
-		configStream >> config;
-	}
-	catch (const json::parse_error& e)
-	{
-		std::cerr << "Parse error : " << e.what() << '\n';
-		exit(-1);
-	}
-	configStream.close();
+		std::ifstream configStream("config.json");
+		if (!configStream.is_open())
+		{
+			std::cerr << "Could not open the config file!" << '\n';
+			exit(-1);
+		}
 
-	std::string ipAddress;
-	U16 port;
-	try
-	{
-		ipAddress = config.at("Server").at("IPAddress");
-		port = config.at("Server").at("Port");
-		username = config.at("Player").at("Username");
+		json config;
+		try
+		{
+			configStream >> config;
+		}
+		catch (const json::parse_error &e)
+		{
+			std::cerr << "Parse error : " << e.what() << '\n';
+			exit(-1);
+		}
+		configStream.close();
+
+		std::string ipAddress;
+		U16 port;
+		try
+		{
+			ipAddress = config.at("Server").at("IPAddress");
+			port = config.at("Server").at("Port");
+			username = config.at("Player").at("Username");
+		}
+		catch (const json::type_error &e)
+		{
+			std::cerr << "Errors in config.json file : " << e.what() << '\n';
+			exit(-1);
+		}
+
+		if (server)
+			delete server;
+
+		server = new Server(ipAddress, port);
 	}
-	catch (const json::type_error& e)
-	{
-		std::cerr << "Errors in config.json file : " << e.what() << '\n';
-		exit(-1);
-	}
-
-	if (server)
-		delete server;
-
-	server = new Server(ipAddress, port);
-
 }
 
 MultiplayerMenu::~MultiplayerMenu()
 {
-	delete server;
+	return;
 }
 
 void MultiplayerMenu::update()
 {
-    return;
+	return;
 }
 
 void MultiplayerMenu::render() const
 {
-    _gui.draw();
+	_gui.draw();
 }
 
-tgui::Gui* MultiplayerMenu::get_gui_ptr() const
+tgui::Gui *MultiplayerMenu::get_gui_ptr() const
 {
-    return &_gui;
+	return &_gui;
 }
 
 void MultiplayerMenu::exchange_data()
 {
-    return;
+	if (_clock.getElapsedTime().asMilliseconds() > 2'000)
+	{
+		server->get_rooms_list();
+		_clock.restart();
+	}
+
+	std::string response = server->dequeue_response();
+	json responseJSON;
+	if (response == "")
+		return;
+	try
+	{
+		responseJSON = json::parse(response);
+		std::string command = responseJSON.at("Command");
+		if (command != "RoomsList")
+			return;
+		_listBox->removeAllItems();
+		for (auto& x : responseJSON.at("Data"))
+			_listBox->addItem(x.dump());
+	}
+	catch(const json::parse_error& e)
+	{
+		std::cerr << "MultiplayerMenu Rooms list getting exception ; Parse error at byte : " << e.byte << " : " << e.what() << '\n';
+	}
+	catch (const json::type_error& e)
+	{
+		std::cerr << "MultiplayerMenu Rooms list getting exception ; Type error : " << e.what() << '\n';
+	}
+	catch (const json::out_of_range& e)
+	{
+		std::cerr << "MultiplayerMenu Rooms list getting exception ; Out of range error : " << e.what() << '\n';
+	}
 }
