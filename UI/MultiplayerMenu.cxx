@@ -4,6 +4,7 @@
 #include "../setup.hxx"
 #include "../Server.hxx"
 #include "CreateRoomMenu.hxx"
+#include "Lobby.hxx"
 
 #include <fstream>
 #include <SFML/Graphics.hpp>
@@ -48,8 +49,29 @@ MultiplayerMenu::MultiplayerMenu() : _gui(*window)
 	_listBox->onItemSelect([&]() {
         // Get the selected item
         std::string selectedItem = _listBox->getSelectedItem().toStdString();
+		std::cout << selectedItem << '\n';
         // Perform an action based on the selected item
-        std::cout << "Selected item: " << selectedItem << '\n';
+        try
+		{
+			json item = json::parse(selectedItem);
+			I32 id = item.at("ID");
+			std::cout << "Connection to roomID : " << id << '\n';
+			if (server->connect_to_room(id))
+				nextScene = new Lobby();
+		}
+		catch(const json::parse_error& e)
+		{
+			std::cerr << "Room connection exception ; Parse error at byte : " << e.byte << " : " << e.what() << '\n';
+		}
+		catch (const json::type_error& e)
+		{
+			std::cerr << "Room connection exception ; Type error : " << e.what() << '\n';
+		}
+		catch (const json::out_of_range& e)
+		{
+			std::cerr << "Room connection exception ; Out of range error : " << e.what() << '\n';
+		}
+		
     });
 
 	// server creation.

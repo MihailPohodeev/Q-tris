@@ -10,7 +10,9 @@
 class Lobby : public Scene
 {
     mutable tgui::Gui _gui;
+    sf::Clock _clock;
 
+    tgui::ListBox::Ptr _playersList;
     tgui::Button::Ptr _disconnectButton;
     tgui::Button::Ptr _readyButton;
 public:
